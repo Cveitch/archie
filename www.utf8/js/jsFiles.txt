@@ -1,3 +1,0 @@
-/*
-Holding the .js files for running the show
-*/
