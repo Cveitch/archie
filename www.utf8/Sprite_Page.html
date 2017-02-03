@@ -1,0 +1,294 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SPRITE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script type='text/javascript' >
+        var jump = true;
+        //Set the first level
+        localStorage.level = 1;
+    </script>
+
+    <script type = "text/javascript" src = "js/AttributeBars.js"></script>
+    <script type = "text/javascript" src = "js/Phaser.js"></script>
+    <script type = "text/javascript" src = "js/Boot.js"></script>
+    <script type = "text/javascript" src = "js/Preload.js"></script>
+    <script type = "text/javascript" src = "js/UserInfo.js"></script>
+    <script type = "text/javascript" src = "js/Comparison.js"></script>
+    <script type = "text/javascript" src = "js/ObjectiveLayer.js"></script>
+    <script type = "text/javascript" src = "js/Main.js"></script>
+    <script type = "text/javascript" src = "js/Attributes.js"></script>
+
+    <style>
+        .pauseScreen
+        {
+            background-color:   rgba(255,255,255,0.8);
+            width:              100vw;
+            height:             85vh;
+            display:            flex;
+            justify-content:    flex-end;
+        }
+        .barScreen
+        {
+            width:              100vw;
+            height:             15vh;
+            margin-top:         85vh;
+            display:            flex;
+        }
+        .barLabelScreen
+        {
+            width:              100vw;
+            height:             5vh;
+            margin-top:         87.75vh;
+            display:            flex;
+        }
+        .objectiveScreen
+        {
+            background-color:   rgba(255,255,255,0.5);
+            width:              100vw;
+            height:             100vh;
+        }
+        .attributeBarContainer
+        {
+            border-top:         solid thick #9b9b9b;
+            width:              33.33%;
+            background-color:   #68fcff;
+        }
+        .attributeBarAnimate
+        {
+            background-color:   coral;
+            width:              50%;
+            height:             100%;
+        }
+        .attributeBarText
+        {
+            font-family:        Verdana,Geneva,sans-serif;
+            width:              33.33%;
+            text-align:         center;
+            transform:          translateY(25%)
+        }
+        .attributeBarTextInner
+        {
+            float:              left;
+            width:              15vw;
+            padding:            0.5vh 0.5vw 0.5vh 0.5vw;
+            border:             solid medium white;
+            background-color:   rgba(255,255,255,0.8);
+            transform:          translateX(50%)
+        }
+        .button
+        {
+            font-family:        Verdana,Geneva,sans-serif;
+            background-color:   crimson;
+            text-align:         center;
+            color:              white;
+            border:             none;
+            font-size:          20px;
+        }
+        .startButton
+        {
+            position:           fixed;
+            bottom:             5vh;
+            left:               50%;
+            transform:          translate(-50%, 0%);
+            padding:            2vh 5vw 2vh 5vw;
+        }
+        .button:active
+        {
+            background-color:   #b91133;
+        }
+        .button:focus
+        {
+            outline:            none;
+        }
+        .heading
+        {
+            font-family:        Verdana,Geneva,sans-serif;
+            text-align:         center;
+            color:              white;
+            padding-left:       15px;
+            padding-right:      15px;
+            font-size:          35px;
+        }
+        .centerBoxHorizontal
+        {
+            margin-right:       50px;
+            position:           relative;
+            height:             100vh;
+            left:               50%;
+            transform:          translate(-50%, 0%);
+            background-color:   coral;
+            box-sizing:         border-box;
+            border:             solid thick #f1f1f1;
+
+        }
+        .objectiveBody
+        {
+            font-family:        Verdana,Geneva,sans-serif;
+            text-align:         justify;
+            color: #646464;
+        }
+        .textBox
+        {
+            border:             solid thin white;
+            background-color:   rgba(255,255,255,0.5);
+            padding:            2%;
+            margin-left:        15vw;
+            margin-right:       15vw;
+        }
+        .buttonTable
+        {
+            width:              100vw;
+        }
+        .buttonTextFormat
+        {
+            font-family:        Verdana,Geneva,sans-serif;
+            color: #242424;
+        }
+        html,body
+        {
+            padding:            0;
+            margin:             0;
+            border:             0;
+        }
+
+    </style>
+
+    <script>
+        function initiate()
+        {
+            //Create a new game that fills the screen
+            game = new Phaser.Game(window.innerWidth, window.innerHeight, "gameLayer");
+
+            //Add all states
+            game.state.add("Boot", Boot);
+            game.state.add("Preload", Preload);
+            game.state.add("Main", Main);
+            game.state.add("Attributes", Attributes);
+
+            //Startup the physics
+            game.state.start("Boot");
+        }
+    </script>
+</head>
+
+<body>
+<!--Gives a value to the page number, used in context switches-->
+<!--AD: Start the booting sequence-->
+<script>
+    var PAGE = "SPRITE";
+    var text = window.location.hash.substring(1);
+    var ds = [];
+    setCompare(text);
+
+    //Comparison to allow game to be booted once
+    if(getCompare() === true)
+    {
+        //Creating the local storage object to hold the data structure created from the canvas page
+        localStorage.ds = JSON.stringify(ds);
+
+        //Initialize attempt
+        localStorage.attempt = 0;
+
+        //Start the game
+        initiate();
+    }
+    else
+    {
+        //Allows the same level to be replayed
+        initiate();
+    }
+</script>
+<!--Clears float for align function-->
+<div style="clear: both;"></div>
+
+<!--Logic for the pause screen, bar layout, and button positioning-->
+<div id="container" style="position: relative;">
+
+    <!-- The game layer of the page -->
+    <div id="gameLayer" style="position: absolute; z-index: 1"></div>
+
+    <!-- The pause screen layer of the page -->
+    <div id="buttonLayer" class="pauseScreen" style="display: none; position: absolute; z-index: 2;">
+        <div>
+            <!-- This table holds the continue and reset buttons and labels.-->
+            <table id = "gameOptions" class="buttonTable buttonTextFormat">
+                <tr>
+                    <td align="center"><img src="assets/images/Buttons/spr_cancelBlue.png" onclick="togglePause()"></td>
+                    <td align="center"><img src="assets/images/Buttons/spr_retryBlue.png" onclick="retryLevel()"></td>
+                </tr>
+                <tr>
+                    <td align="center">Continue</td>
+                    <td align="center">Restart</td>
+                </tr>
+            </table>
+            <!-- This table holds the attribute buttons and labels -->
+            <table id = "attributeOptions" class="buttonTable buttonTextFormat">
+                <tr>
+                    <td align="center"><img id="button_1_image" src=""></td>
+                    <td align="center"><img id="button_2_image" src=""></td>
+                    <td align="center"><img id="button_3_image" src=""></td>
+                </tr>
+                <tr>
+                    <td align="center" id="button_1_text"></td>
+                    <td align="center" id="button_2_text"></td>
+                    <td align="center" id="button_3_text"></td>
+                </tr>
+                <tr>
+                    <td align="center"><img id="button_4_image" src=""></td>
+                    <td align="center"><img id="button_5_image" src=""></td>
+                    <td align="center"><img id="button_6_image" src=""></td>
+                </tr>
+                <tr>
+                    <td align="center" id="button_4_text"></td>
+                    <td align="center" id="button_5_text"></td>
+                    <td align="center" id="button_6_text"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- The attribute bar layer of the page -->
+    <div id="barLayer" class="barScreen" style="position: absolute; z-index: 3;">
+        <!--- Defines 3 attribute bars. The container holds the bar and the animate is what changes-->
+        <div id="attributeBar_1" class="attributeBarContainer">
+            <div id="attributeBar_1_animate" class="attributeBarAnimate"></div>
+        </div>
+
+        <div id="attributeBar_2" class="attributeBarContainer">
+            <div id="attributeBar_2_animate" class="attributeBarAnimate"></div>
+        </div>
+
+        <div id="attributeBar_3" class="attributeBarContainer">
+            <div id="attributeBar_3_animate" class="attributeBarAnimate"></div>
+        </div>
+    </div>
+
+    <!-- The labels for the attribute bars -->
+    <div id="barLabelLayer" class="barLabelScreen" style="position: absolute; z-index: 4;">
+        <!--- Defines 3 labels. -->
+        <div class="attributeBarText"><span id="attributeBar_1_label" class="attributeBarTextInner"></span></div>
+        <div class="attributeBarText"><span id="attributeBar_2_label" class="attributeBarTextInner"></span></div>
+        <div class="attributeBarText"><span id="attributeBar_3_label" class="attributeBarTextInner"></span></div>
+    </div>
+
+    <!-- Overlays a screen that contains the objective of hte level -->
+    <div id="objectiveLayer" class="objectiveScreen" style="display: none; position: absolute; z-index: 5;">
+        <div id="objectiveWrapper" class="centerBoxHorizontal">
+            <div id="levelNumber" class="heading" style="margin-top: 2%"></div>
+            <div id="levelName" class="heading" style="font-size: 20px; margin-bottom: 5vh">Objective</div>
+
+            <!-- Box to contain the text of the objective screen -->
+            <div if="textWrapper" class="textBox">
+                <img src="assets/images/spr_DuckWizard.gif" />
+                <div id="objectiveBody" class="objectiveBody"></div>
+            </div>
+            <div id="startButton" class="startButton button" onclick="startGame()">Start</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

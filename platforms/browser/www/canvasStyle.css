@@ -1,0 +1,131 @@
+body,html
+{
+    width: 100%; 
+    height: 100%; 
+    margin: 0; 
+    padding: 0; 
+    overflow: hidden;
+}
+#TOP_SCREEN_INFO .usernameLabel
+{
+    z-index: 1; 
+    position: absolute; 
+    margin: 0; 
+    padding: 0; 
+    color: aqua;
+}
+canvas
+{
+    width: 100%; 
+    height: 100%; 
+    display: block; 
+    z-index: 0; 
+    position: absolute; 
+    background-color: #bf3a3a;
+    background-image: url(assets/images/cloud_1.jpg);
+}
+button 
+{
+    position: relative; 
+    z-index: 1;
+    height: 75px;
+    width: 150px;
+}
+
+#resetButton
+{
+    background-color: aqua;
+    border-radius: 90px 90px 0 0;
+    -moz-border-radius: 90px 90px 0 0;
+    -webkit-border-radius: 90px 90px 0 0;
+    /*background:Transparent;*/
+    background-color: #f2895c;
+    z-index: 1; 
+    position: absolute; 
+    top: 93%;
+    left: 45%;
+    margin-right: -50%;
+}
+
+#goButton
+{
+    background-color: aqua;
+    border-radius: 90px 90px 90px 90px;
+    -moz-border-radius: 90px 90px 90px 90px;
+    -webkit-border-radius: 90px 90px 90px 90px;
+    background:#d8c23f;
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    right: 50%;
+    margin-right: -50%;
+}
+
+#canvasButton
+{
+    background-color: aqua;
+    border-radius: 90px 90px 90px 90px;
+    -moz-border-radius: 90px 90px 90px 90px;
+    -webkit-border-radius: 90px 90px 90px 90px;
+    background:#d8c23f;
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 0%;
+    margin-right: -50%;
+}
+
+@media screen
+and (max-aspect-ratio: 800/400)
+{
+    button
+    {
+        position: relative;
+        z-index: 1;
+        height: 50px;
+        width: 125px;
+    }
+}
+
+@media screen
+and (max-aspect-ratio: 640/360)
+{
+    button
+    {
+        position: relative;
+        z-index: 1;
+        height: 50px;
+        width: 100px;
+    }
+}
+
+@media screen
+and (max-aspect-ratio: 480/320)
+{
+    button
+    {
+        position: relative;
+        z-index: 1;
+        height: 36px;
+        width: 65px;
+    }
+}
+
+@media screen
+and (max-aspect-ratio: 400/240)
+{
+    button
+    {
+        position: relative;
+        z-index: 1;
+        height: 25px;
+        width: 45px;
+    }
+}
+
+@viewport
+{
+    width: device-width; 
+    height: device-height;
+}
+

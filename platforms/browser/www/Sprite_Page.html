@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SPRITE</title>
+
+    <script type='text/javascript' >
+        var jump = true;
+        //Set the first level
+        localStorage.level = 1;
+    </script>
+
+    <script type = "text/javascript" src = "js/Phaser.js"></script>
+    <script type = "text/javascript" src = "js/Boot.js"></script>
+    <script type = "text/javascript" src = "js/Preload.js"></script>
+    <script type = "text/javascript" src = "js/UserInfo.js"></script>
+    <script type = "text/javascript" src = "js/Comparison.js"></script>
+    <script type = "text/javascript" src = "js/Main.js"></script>
+
+    <script>
+        function initiate()
+        {
+            //Create a new game that fills the screen
+            game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS);
+
+            //Add all states
+            game.state.add("Boot", Boot);
+            game.state.add("Preload", Preload);
+            game.state.add("Main", Main);
+
+            //Startup the physics
+            game.state.start("Boot");
+        }
+    </script>
+</head>
+
+<body onload="getUsername('usernamLabel')">
+    <!--Gives a value to the page number, used in context switches-->
+    <!--AD: Start the booting sequence-->
+    <script>
+        var PAGE = "SPRITE";
+        var text = window.location.hash.substring(1);
+        var ds = [];
+        setCompare(text);
+
+        //Comparison to allow game to be booted once
+        if(getCompare() === true)
+        {
+            //Creating the local storage object to hold the data structure created from the canvas page
+            localStorage.ds = JSON.stringify(ds);
+
+            //Initialize attempt
+            localStorage.attempt = 0;
+
+            //Start the game
+            initiate();
+        }
+        else
+        {
+            //Allows the same level to be replayed
+            initiate();
+        }
+    </script>
+    <!--Clears float for align function-->
+    <div style="clear: both;"></div>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="initial-scale=0.4, maximum-scale=1">
+    <meta charset="UTF-8">
+    <title>SCORE</title>
+    <!--<script type = "text/javascript" src="jsFiles/Phaser.js"></script> -->
+    <!--<script type = "text/javascript" src="jsFiles/Comparison.js"></script> -->
+    <script type = "text/javascript" src = "js/UserInfo.js"></script>
+    <script type = "text/javascript" src = "js/Score_Page.js"></script>
+    <script type = "text/javascript" src = "js/EquationGeneration.js"></script>
+    <script src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=AM_HTMLorMML"></script>
+
+    <!--Links this file to the css file containing formatting-->
+    <link rel="stylesheet" type="text/css" href="Formatting.css">
+    <!-- CSS for elements only found on this page. -->
+
+</head>
+
+<body onload="displayUsername('usernameLabel'); updatePageInfo()" class="pageBackground">
+
+    <!--Gives a value to the page number, used in context switches-->
+    <script>
+        var PAGE = "SCORE";
+        var winTitle = "You win!"
+        var lossTitle = "Sorry, try again!";
+        var neutralTitle = "Hey there!";
+    </script>
+
+    <div class="centerBoxHorizontal" align="center" >
+
+        <!--Username goes on the top left of the screen-->
+        <div id="topScreenInfo">
+            <p class="leftFormatAlign standardFormat" id="usernameLabel"></p>
+        </div>
+
+        <!--A line that separates the top info from main info.-->
+        <hr class="line" style="clear:both">
+
+        <!--main info section of the page-->
+        <div style="margin-bottom: 5%">
+            <h1 id="titleMessage" class="heading standardFormat" >Congratulations</h1>
+            <script>
+                if (localStorage.win == "true")
+                {
+                    //Set the title to congratulate the player
+                    document.getElementById("titleMessage").innerHTML = winTitle;
+                }
+                else if(localStorage.win == "false")
+                {
+                    //Set the title to tell the player to git gud
+                    document.getElementById("titleMessage").innerHTML = lossTitle;
+                }
+                else
+                {
+                    //Set the title to show a neutral message if player enters Score page before win/loss events are
+                    // triggered
+                    document.getElementById("titleMessage").innerHTML = neutralTitle;
+                }
+            </script>
+            <p id="levelMessage" class="standardFormat" style="font-size: 25px"></p>
+            <p id="attemptMessage" class="standardFormat" style="font-size: 15px"></p>
+            <button onclick="replayLevel()" id="replayButton" class="standardButton standardFormat">Replay</button>
+            <button onclick="nextLevel()" id="nextLevelButton" class="standardButton standardFormat">Next Level</button>
+        </div>
+
+        <!--A line that separates the main info from level info.-->
+        <hr class="line" style="clear:both">
+
+        <!--Level info section of the page-->
+        <!--Things like the wolfram alpha stuff will go in this section.-->
+        <div>
+            <h2 class="subheading standardFormat"><u>Level Information</u></h2>
+        </div>
+
+        <div style="margin-bottom: 5%">
+
+            <button onclick="stageMenu()" id="StageInfoButton" class="standardButton standardFormat">Stage Info</button>
+            <button onclick="formalDefMenu()" id="FormalDefButton" class="standardButton standardFormat">Formal Definitions</button>
+        </div>
+
+    </div>
+
+
+</body>
+
+</html>

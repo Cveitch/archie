@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="false"
+        jar="/Users/Tim/Desktop/JavaScript/Cord-Arch/Arch/platforms/android/build/intermediates/exploded-aar/android/CordovaLib/unspecified/debug/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="23.0.3"
+        sha1="d2629be308515d6f76509ec1299b9cc2e10bf453">
+        <dex dex="/Users/Tim/Desktop/JavaScript/Cord-Arch/Arch/platforms/android/build/intermediates/pre-dexed/debug/CordovaLib-unspecified-debug_b109e033b9af42e42d95a513708af19e8d9fda4f.jar" />
+    </item>
+
+</items>
