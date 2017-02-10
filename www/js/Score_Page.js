@@ -7,7 +7,7 @@
  */
 function updatePageInfo()
 {
-    var attemptString = "Attempts: " + localStorage.attempt;
+    var attemptString = "Attempts: " + getLevelAttempts();
 
     //Display level message based on completion of level
     if(localStorage.win === "false")
