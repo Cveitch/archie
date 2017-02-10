@@ -23,7 +23,14 @@ function getUsername()
 /** Returns the current level number. */
 function getCurrentLevel()
 {
-    return sessionStorage.getItem("currentLevel")
+    if(sessionStorage.getItem("currentLevel") === null)
+    {
+        return "1";
+    }
+    else
+    {
+        return sessionStorage.getItem("currentLevel");
+    }
 }
 
 /** Returns the current attempts at the level. */
