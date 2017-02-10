@@ -69,6 +69,9 @@ Main.prototype = {
         //this.createButtons();
         //Add a onDown functions to game.
         this.game.input.onDown.add(togglePause,this);
+	    
+	//Important: allows sprites to trigger impact events.
+        game.physics.p2.setImpactEvents(true);    
     },
 
     update: function()
@@ -535,6 +538,25 @@ Main.prototype = {
         addToScreen(attr2,2,5);
         addToScreen(attr3,3,6);
     },
+    addPointObject: function(x,y)
+    {
+        //Creates a new point object as a sprite.
+        var temp = this.game.add.sprite(x,y,'star');
+        //Enable the physics on the sprite.
+        temp.enableBody = true;
+        //Add the sprite to the game.
+        this.game.physics.p2.enable(temp,false);
+        //Creates a 'sensor' that triggers an event whenever the player collides with it.
+        temp.body.setCircle(25);
+        //Set the point object to remain static in the game (ie. wont fall).
+        temp.body.static = true;
+        //Adds a callback event for whenever the player collides with it.
+        temp.body.createBodyCallback(this.player,this.pointCollisionEvent,this.game);
+    },
+    pointCollisionEvent: function(bodyA,bodyB)
+    {
+        bodyA.sprite.destroy();
+    }
 };
 
 /**
