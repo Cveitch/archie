@@ -1,163 +1,103 @@
 /**
- * Created by avrobullet on 18/11/16.
+ * This file manages all the information about the attribute system. When the user presses
+ * buttons, this effects the values in this file. These changes are propagated to the attribute bars.
+ * Every game update, it looks to see if any of the values were changed and if so, makes the changes in
+ * the game.
  */
-//Constructor with the default settings for the player and the environment
-Attributes = function()
+
+//Constructor for an attribute object.
+function Attributes()
 {
-    //Default attribute values
-    this.gravity    = 500;    //Option 1
-    this.velocity   = 0;     //Option 2
-    this.elasticity = 0;     //Option 3
-    this.friction   = 0.5;     //Option 4
-    //More options later!...
-
-    this.opt_n = "...";
-    this.createdValue = 10;
-};
-
-//Global variable tha stores the variables for each affected attribute selected
-var value_1;
-var value_2;
-var value_3;
-var valueCompare;
-
-//Attributes selected
-var firstAttribute;
-var secondAttribute;
-var thirdAttribute;
-
-//Allocates the change of the attributes
-Attributes.prototype.allocateAttributeChange = function(OPT_n,FINAL_VALUE)
+    this.attrBars = new AttributeBars();
+}
+//Sets the objects variables to their proper amounts given a array of the form:
+//{name: string, max: int, min: int, init: int, jump: int}
+//These are found in the level file which stores info pertaining to level attribute amounts.
+Attributes.prototype.setAttributes = function(attr1,attr2,attr3)
 {
-    switch(OPT_n)
+    //Saves the attribute arrays to the object
+    this.attr1 = attr1;
+    this.attr2 = attr2;
+    this.attr3 = attr3;
+    //Sets variables to keep track of the current amounts.
+    this.attr1CurrentVal = attr1.init;
+    this.attr2CurrentVal = attr2.init;
+    this.attr3CurrentVal = attr3.init;
+    //Sets the attribute bars to display their initial amounts.
+    this.updateAttributeBar(1);
+    this.updateAttributeBar(2);
+    this.updateAttributeBar(3);
+    //Sets default parameters. These are functions instead of values so that
+    this.velocity = function(){return 0};
+    this.acceleration = function(){return 0};
+    this.gravity = function(){return 500};
+    this.elasticity = function(){return 0};
+    this.friction = function(){return 0.5};
+
+    /* This function connects the generic attributes referenced throughout the file with the corresponding
+     attribute that it represents. This is so that the game can set the attributes without having to do
+     a check each time to see what the name of the attribute corresponds too. If a attribute is not used
+     in a level, then the default value assigned above is used i place.*/
+    function interlockVariables(attrName, attrNum, thisRef)
     {
+        switch(attrName)
+        {
+            case "velocity":
+                thisRef.velocity = function(){return eval("this.attr"+attrNum+"CurrentVal;")};
+                break;
+            case "gravity":
+                thisRef.gravity = function(){return eval("this.attr"+attrNum+"CurrentVal;")};
+                break;
+            case "elasticity":
+                thisRef.elasticity = function(){return eval("this.attr"+attrNum+"CurrentVal;")};
+                break;
+            case "friction":
+                thisRef.friction = function(){return eval("this.attr"+attrNum+"CurrentVal;")};
+                break;
+        }
+    }
+    interlockVariables(this.attr1.name,1,this);
+    interlockVariables(this.attr2.name,2,this);
+    interlockVariables(this.attr3.name,3,this);
+
+};
+//This function updates the percentage on the given attribute bar to reflect changes made to that attribute.
+Attributes.prototype.updateAttributeBar = function(attrNum)
+{
+    switch(attrNum)
+    {
+        /* Updates the attribute bars to display the initial amounts.
+         * The formula (current-min)/(max-min) is used to find the percentage since it is possible to
+         * have a range ranging from negative to positive. */
         case 1:
-            this.opt_n = "gravity";
-            //Set option 1
-            this.setGravity(FINAL_VALUE);
+            this.attrBars.setAttributeBar_1(100*(this.attr1CurrentVal - this.attr1.min)/(this.attr1.max - this.attr1.min));
             break;
         case 2:
-            this.opt_n = "velocity";
-            //Set option 3
-            this.setVelocity(FINAL_VALUE);
+            this.attrBars.setAttributeBar_2(100*(this.attr2CurrentVal - this.attr2.min)/(this.attr2.max - this.attr2.min));
             break;
         case 3:
-            this.opt_n = "elasticity";
-            //Set option 2
-            this.setElasticity(FINAL_VALUE);
+            this.attrBars.setAttributeBar_3(100*(this.attr3CurrentVal - this.attr3.min)/(this.attr3.max - this.attr3.min));
             break;
-        case 4:
-            this.opt_n = "friction";
-            //Set option 4
-            this.setFriction(FINAL_VALUE);
-            break;
-        default:
     }
 };
-//Determines the three attributes to be affected (selected based on the level set by Main.js)
-Attributes.prototype.selectAttributes = function(OPT_1, OPT_2, OPT_3)
+//Updates the attribute amount by the given jump.
+Attributes.prototype.updateAttributeAmount = function(attrNum, isPositive)
 {
-    firstAttribute     = OPT_1;
-    secondAttribute    = OPT_2;
-    thirdAttribute     = OPT_3;
-};
-//Increment the first attribute
-Attributes.prototype.incrementFirst = function(VALUE)
-{
-    value_1 = VALUE;
-    //Determine which value to be set
-    this.allocateAttributeChange(firstAttribute, value_1);
-};
-//Increment the second attribute
-Attributes.prototype.incrementSecond = function(VALUE)
-{
-    value_2 = VALUE;
-    //Determine which value to be set
-    this.allocateAttributeChange(secondAttribute, value_2);
-};
-//Increment the third attribute
-Attributes.prototype.incrementThird = function(VALUE)
-{
-    value_3 = VALUE;
-    //Determine which value to be set
-    this.allocateAttributeChange(thirdAttribute, value_3);
-};
-//Decrement the first attribute
-Attributes.prototype.decrementFirst = function(VALUE)
-{
-    value_1 = VALUE;
-    //Determine which value to be set
-    this.allocateAttributeChange(firstAttribute, value_1);
-};
-//Decrement the second attribute
-Attributes.prototype.decrementSecond = function(VALUE)
-{
-    value_2 = VALUE;
-    //Determine which value to be set
-    this.allocateAttributeChange(secondAttribute, value_2);
-};
-//Decrement the third attribute
-Attributes.prototype.decrementThird = function(VALUE)
-{
-    value_3 = VALUE;
-    //Determine which value to be set
-    this.allocateAttributeChange(thirdAttribute, value_3);
-};
-
-//Set new gravity
-/*
-AD: Gravity cannot be negative!!!
-* */
-Attributes.prototype.setGravity = function(NEW_GRAVITY)
-{
-    //AD: at 50% of the bar the gravity's TRUE_PHYSICAL_VALUE as 9.8 m/s^2, then adjust appropriately
-    //Added a multiplier of 9 to achieve distinctive change of gravity
-    valueCompare = this.gravity+(9*NEW_GRAVITY);
-    if(valueCompare <= 1000 && valueCompare >= 0)
+    //Increments or decrements the number based on the isPositive param.
+    if(isPositive)
     {
-        this.gravity = valueCompare;
+        //If the jump will cause the current value to go above the max, then limit it.
+        if(eval("(this.attr"+attrNum+"CurrentVal + this.attr"+attrNum+".jump) <= this.attr"+attrNum+".max"))
+            eval("this.attr"+attrNum+"CurrentVal += this.attr"+attrNum+".jump;");
+        else eval("this.attr"+attrNum+"CurrentVal = this.attr"+attrNum+".max")
     }
-};
-//Set new velocity
-Attributes.prototype.setVelocity = function(NEW_VELOCITY)
-{
-    //Added a multiplier of 9 to achieve distinctive change of velocity
-    valueCompare = this.velocity+(9*NEW_VELOCITY);
-    if(valueCompare <= 500 && valueCompare >= -500)
+    else
     {
-        this.velocity = valueCompare;
+        //If the jump will cause the current value to go below the min, then limit it.
+        if(eval("(this.attr"+attrNum+"CurrentVal - this.attr"+attrNum+".jump) >= this.attr"+attrNum+".min"))
+            eval("this.attr"+attrNum+"CurrentVal -= this.attr"+attrNum+".jump;");
+        else eval("this.attr"+attrNum+"CurrentVal = this.attr"+attrNum+".min")
     }
+    //Updates the attribute bar to reflect changes.
+    this.updateAttributeBar(attrNum);
 };
-//Set new elasticity
-Attributes.prototype.setElasticity = function(NEW_ELASTICITY)
-{
-    //Added a multiplier of 9 to achieve distinctive change of velocity
-    valueCompare = this.elasticity+(0.1*NEW_ELASTICITY);
-    if(valueCompare <= 1.5 && valueCompare >= 0)
-    {
-        this.elasticity = value;
-    }
-};
-//Set new velocity
-Attributes.prototype.setFriction = function(NEW_FRICTION)
-{
-    valueCompare = this.friction+(0.1*NEW_FRICTION);
-    if(valueCompare <= 1 && valueCompare >= 0)
-    {
-        this.friction = valueCompare;
-    }
-};
-/*
- //Set new friction
- setFriction = function(NEW_FRICTION)
- {
- this.friction = this.friction+NEW_FRICTION;
- };
- //Set new elasticity
- /*
- AD: this is called "restitution" in Phaser's P2 engine. Here's a good link to properly implement it: https://phaser.io/examples/v2/p2-physics/gravity-scale
- setElasticity = function(NEW_ELASTICITY)
- {
- this.elasticity = this.elasticity+NEW_ELASTICITY;
- };
-* */
