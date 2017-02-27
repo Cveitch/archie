@@ -20,6 +20,7 @@ Main.prototype = {
         game.physics.p2.setImpactEvents(true);      //Important: allows sprites to trigger impact events.
         onStart(this);
     },
+  
     update: function()
     {
         //Check the win condition.
@@ -37,6 +38,7 @@ Main.prototype = {
         //Flips the character left of right depending on which way their velocity is. 1 is right, -1 is left.
         if(attributes.velocity() < 0)
             this.player.scale.x = -1;
+
         else if (attributes.velocity() > 0)
             this.player.scale.x = 1;
 
@@ -48,6 +50,7 @@ Main.prototype = {
         else
             this.player.loadTexture("avatar", 0);
 
+
         this.updateGameAttributes();
     },
     //Called every game update and updates the attribute amount if any changes were made.
@@ -57,6 +60,7 @@ Main.prototype = {
         this.game.physics.p2.gravity.y = attributes.gravity();
 
     },
+  
     isTouchingDown: function(object)
     {
         var yAxis = p2.vec2.fromValues(0, 1);
@@ -70,6 +74,7 @@ Main.prototype = {
             }
         } return result;
     },
+  
     createPhysics: function()
     {
         // Starts the Phaser P2 Physics Engine
@@ -97,6 +102,7 @@ Main.prototype = {
         //adds animation
         this.player.animations.add('walk', [1,2,3], 10, true);
     },
+
     //Create the environment of the game.
     createWorld: function()
     {
@@ -113,18 +119,20 @@ Main.prototype = {
         this.mymap.createLayer('BkgDetails2');
         this.mymap.createLayer('BkgDetails3');
         this.mymap.createLayer('BlockDetails');
-        //TODO: check if this line is needed.
-        layermain = this.mymap.createLayer('Block');
+        this.mymap.createLayer('Block');
 
+        //this.mymap.createLayer("testObjects");
         //we resize the world to the background as it will be covering the entire level
         this.layerbackground.resizeWorld();
 
         this.game.physics.p2.convertCollisionObjects(this.mymap, "objects1");
+
     },
     loadLevelAttributeInfo: function()
     {
         switch(parseInt(getCurrentLevel()))
         {
+
             case 1:
                 currentLevel = levels.level1;
                 attributes.setAttributes(currentLevel.attribute1,currentLevel.attribute2,currentLevel.attribute3);
@@ -135,6 +143,7 @@ Main.prototype = {
             //TODO: add other levels.
         }
     },
+  
     loadPauseScreenInfo: function()
     {
         //This function takes the attribute number and assigns the images, text, and onclick's to the pause screen.
