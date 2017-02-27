@@ -45,6 +45,9 @@ Main.prototype = {
         //OR: a possible expansion to displaying the score on the screen!
         this.labelIndex = game.add.text(20, 20, "0",{ font: "30px Arial", fill: "#000000" });
 
+
+
+
         //start timer
         //timer = game.time.create();
 
@@ -68,8 +71,64 @@ Main.prototype = {
         //Create Sprite page buttons
         //this.createButtons();
         //Add a onDown functions to game.
+
+        //should add a createGroups
+
+        // CAN BE REMOVED {
+        coins = game.add.group();
+        coins.enableBody = true;
+
+
+        //  And now we convert all of the Tiled objects with an ID of 34 into sprites within the coins group
+        this.mymap.createFromObjects('test_objects', 143, 'goal', 0, true, false, coins);
+
+
+
+        /*
+        for (test_objects in this.mymap.objects) {
+            if (this.mymap.objects.hasOwnProperty(test_objects)) {
+                // create layer objects
+                this.mymap.objects[test_objects].forEach(this.create_object, this);
+            }
+        }
+
+        */
+
+        cursors = game.input.keyboard.createCursorKeys();
+        //}
+
+        //on any input pause the game
         this.game.input.onDown.add(togglePause,this);
+
+
+
     },
+
+    /*
+    create_object: function (object)
+    {
+    var position, prefab;
+    // tiled coordinates starts in the bottom left corner
+    position = {"x": object.x + (this.mymap.tileHeight / 2), "y": object.y - (this.mymap.tileHeight / 2)};
+    // create object according to its type
+
+        switch (object.type) {
+            case "player":
+                prefab = new Platformer.Player(this, position, object.properties);
+                break;
+            case "sunny":
+                prefab = new Platformer.Enemy(this, position, object.properties);
+                break;
+            case "flying_enemy":
+                prefab = new Platformer.FlyingEnemy(this, position, object.properties);
+                break;
+            case "goal":
+                prefab = new Platformer.Goal(this, position, object.properties);
+                break;
+        }
+        this.prefabs[object.name] = prefab;
+    },
+    */
 
     update: function()
     {
@@ -81,21 +140,8 @@ Main.prototype = {
         {
             goToObjective();
         }
-        if(this.confirmGoSprite === "GO")
-        {
-            //Updates sprite speed
-            this.movePlayer(this.getSpeed());
-        }
-        else if(this.confirmGoSprite === "STOP")
-        {
-            //Gives the sprite an initial velocity of 0 pixels/s
-            this.movePlayer();
-        }
-        else
-        {
-            //Gives the sprite an initial velocity of 20 pixels/s
-            this.movePlayer();
-        }
+
+        this.superGameWin(this.player, getCurrentLevel());
 
         if  (attributes.velocity < 0)
         {
@@ -103,6 +149,7 @@ Main.prototype = {
             // flip character left
             this.player.scale.x = -1;
         }
+            
 
         else if (attributes.velocity > 0)
         {
@@ -123,9 +170,32 @@ Main.prototype = {
 			this.player.loadTexture("avatar", 0);
 		}
 
+        // CAN BE REMOVED {
+		//this is a test function to be removed
+        if (cursors.left.isDown ){   //  Move to the left
+              // a little trick.. flips the image to the left
+            this.player.scale.y = 1; //now play the animation named "walk"
+        }
+        else if (cursors.right.isDown) {//  Move to the right
+
+            this.setObject();
+            this.player.scale.y = -1;
+        }
+        //}
         //Check for changing attributes
         this.checkAttributes();
     },
+    // CAN BE REMOVED {
+    setObject: function() {
+        // set this sprite equal to an object to give it properties
+        this.game.add.sprite(this.player.x + 34, this.player.y + 43,"goal");
+
+    }// }
+
+
+    ,
+
+    // This function continually checks to see if the given object is in contact with the stage platforms
     touchingDown: function(someone)
     {
         var yAxis = p2.vec2.fromValues(0, 1);
@@ -139,6 +209,7 @@ Main.prototype = {
             }
         } return result;
     },
+        /*
     createButtons: function()
     {
         //Initialize the buttons needed (BROKEN)
@@ -169,6 +240,7 @@ Main.prototype = {
 
         }
     },
+    */
     createAttributes: function()
     {
         //Initialize default attributes
@@ -218,6 +290,7 @@ Main.prototype = {
         this.player.animations.add('walk', [1,2,3], 10, true);
 
     },
+    //this adds specific layers from the level json to the world
     createWorld: function()
     {
         //levelName is the string that is used to determine the level based on the level counter
@@ -233,8 +306,9 @@ Main.prototype = {
         this.mymap.createLayer('BkgDetails2');
         this.mymap.createLayer('BkgDetails3');
         this.mymap.createLayer('BlockDetails');
-        layermain = this.mymap.createLayer('Block');
+        this.mymap.createLayer('Block');
 
+        //this.mymap.createLayer("testObjects");
         //we resize the world to the background as it will be covering the entire level
         this.layerbackground.resizeWorld();
 
@@ -243,8 +317,7 @@ Main.prototype = {
         //layermain_tiles = this.game.physics.p2.convertTilemap(this.mymap, layermain);
         this.game.physics.p2.convertCollisionObjects(this.mymap, "objects1");
 
-        //set objects1 as world buildable(?)
-        //this.game.p2.createMaterial("objects1");
+
     },
     objectLocations: function()
     {
@@ -273,6 +346,8 @@ Main.prototype = {
     },
 
         //Moves a player
+    // now is used to win the game
+    /*
     movePlayer: function()
     {
         //check win condition;
@@ -292,9 +367,12 @@ Main.prototype = {
                 //Give the sprite a pathetic speed of 20 pixels/sec
                 this.player.body.velocity.x = 20;
                 break;
+
         }
     },
+    */
 
+    /* CAN REMOVE
     //Sets the current speed of the player from the d.s.
     getSpeed: function()
     {
@@ -324,6 +402,7 @@ Main.prototype = {
         //Display the current velocity
         this.labelIndex.text =  "step..."+this.arrayIndex;
     },
+    */
     //Checks to see if the .
     Goalwin: function(PLAYER, GOAL)
     {
@@ -379,6 +458,7 @@ Main.prototype = {
             }
     },
 
+    //CAN REMOVE *{
     //stop timer;
     endTimer: function()
     {
@@ -396,7 +476,7 @@ Main.prototype = {
         var seconds = "0" + (s - minutes * 60);
         return ":" + seconds.substr(-2);
     },
-
+    //  }*
     //Check current attribute values and set them in game
     checkAttributes: function()
     {
@@ -409,7 +489,7 @@ Main.prototype = {
         //update world friction (air and ground)
         this.player.body.damping                                    = attributes.friction;
         //update player velocity
-        this.player.body.velocity.x                                 =  attributes.velocity;
+        this.player.body.velocity.x                                 = attributes.velocity;
 
 
         //Gonna add more stuff here...
