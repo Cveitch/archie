@@ -1,4 +1,0 @@
-/*
-Holds all the .json sprite physics for the required sprites:
-  1-Betty
-*/
