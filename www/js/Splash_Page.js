@@ -35,8 +35,7 @@ function signIn(buttonID)
     {
         return;
     }
-    //Calls setUsername function in the UserInfo.js file to store the name.
-    setUsername(name);
+    loadUser(name);
 
     //Load the instructions by hiding the sign in container and making the instruction one visible.
     document.getElementById("signInContainer").style.display = "none";
