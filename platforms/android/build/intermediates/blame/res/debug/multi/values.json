@@ -1,6 +1,6 @@
 [
     {
-        "outputFile": "/Users/Tim/Desktop/JavaScript/Cord-Arch/Arch/platforms/android/build/intermediates/incremental/mergeDebugResources/merged.dir/values/values.xml",
+        "outputFile": "/Users/Tim/Desktop/JavaScript/Arch-2017/archie/platforms/android/build/intermediates/incremental/mergeDebugResources/merged.dir/values/values.xml",
         "map": [
             {
                 "to": {
@@ -11,7 +11,7 @@
                     "endOffset": 114
                 },
                 "from": {
-                    "file": "/Users/Tim/Desktop/JavaScript/Cord-Arch/Arch/platforms/android/res/values/strings.xml",
+                    "file": "/Users/Tim/Desktop/JavaScript/Arch-2017/archie/platforms/android/res/values/strings.xml",
                     "position": {
                         "startLine": 4,
                         "startColumn": 4,
@@ -30,7 +30,7 @@
                     "endOffset": 164
                 },
                 "from": {
-                    "file": "/Users/Tim/Desktop/JavaScript/Cord-Arch/Arch/platforms/android/res/values/strings.xml",
+                    "file": "/Users/Tim/Desktop/JavaScript/Arch-2017/archie/platforms/android/res/values/strings.xml",
                     "position": {
                         "startLine": 2,
                         "startColumn": 4,
@@ -49,7 +49,7 @@
                     "endOffset": 223
                 },
                 "from": {
-                    "file": "/Users/Tim/Desktop/JavaScript/Cord-Arch/Arch/platforms/android/res/values/strings.xml",
+                    "file": "/Users/Tim/Desktop/JavaScript/Arch-2017/archie/platforms/android/res/values/strings.xml",
                     "position": {
                         "startLine": 3,
                         "startColumn": 4,

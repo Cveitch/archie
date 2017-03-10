@@ -383,5 +383,7 @@ function togglePause()
 //Reloads the page to reset the level.
 function retryLevel()
 {
+    //vibrates the phone for feed back
+    
     window.location.href = 'Sprite_Page.html';
 }

@@ -127,6 +127,11 @@ Attributes.prototype.updateAttributeAmountFromButton = function(attrNum, isPosit
             }
         }
     }
+    //Updates the attribute bar to reflect changes.
+    this.updateAttributeBar(attrNum);
+    //vibrates when a button is clicked for time in ms
+    window.navigator.vibrate(50);
+
 };
 
 /**

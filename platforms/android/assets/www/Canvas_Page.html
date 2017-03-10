@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="canvasStyle.css"> 
+    <meta charset="UTF-8">
+   
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+    <title>CANVAS</title>
+    <script type = "text/javascript" src="UserInfo.js"></script>
+    <script type = "text/javascript" src="js/UserInfo.js"></script>
+    
+    <script>
+        //setCanvasSize(); 
+    </script>
+    
+    
+    <!--Gives text and button aligning options-->
+    <style>
+        .alignleft {
+            float: left;
+        }
+        .alignright {
+            float: right;
+        }
+        //Overlays the username onto the canvas
+        .overlayName
+        {
+            z-index:        2;
+            position:       relative;
+            margin-left:    3%;
+            font-family:    Verdana,Geneva,sans-serif;
+        }
+    </style>
+
+
+</head>
+
+<body onload="displayUsername('usernameLabel')">
+<!--Gives a value to the page number, used in context switches-->
+<script>
+    var PAGE = "CANVAS";
+    setCompare();
+</script>
+<!--User name information on top left of screen, and button to go between pages on top right-->
+<div id="TOP_SCREEN_INFO">
+    <p class="alignleft overlayName" id="usernameLabel"></p>
+    <button type = "button" id="resetButton" onclick="canvasRedraw()"> RE-DRAW!</button>
+    <button type = "button" id="canvasButton" onclick="getOut()"> WORLD</button>
+    <button type = "button" id="goButton" onclick="sendCoords()"> GO!</button>
+</div>
+
+<!--Canvas to draw on-->
+<canvas onclick="change(event)" id="Canvas" style="border:1px solid #000000" > </canvas>
+
+<script type = "text/javascript" src="js/Drawing.js"></script>
+    
+ <script id = "storeDS">
+     //increases level attempts by 1 everytime the button is pressed
+     increaseLevelAttempts();
+     function storeDS(array)
+        {
+            //stores d.s. generated from drawn graph
+            var ds = array; 
+            // var ds = array;
+            localStorage.ds = JSON.stringify(ds);
+            window.location.href = 'Sprite_Page.html'+ '#' + 'FALSE';
+           
+        }
+     function goToWorld()
+     {
+         //Go back to sprite page without causing sprite to activate with d.s.
+         window.location.href = 'Sprite_Page.html'+ '#' + 'FALSE';
+     }
+    </script>
+<!--Clears float for align function-->
+<div style="clear: both;"></div>
+</body>
+
+</html>
