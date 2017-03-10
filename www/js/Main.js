@@ -1,4 +1,5 @@
-var attributes = new Attributes();  //Global attribute object which manages the values
+var attributes = new Attributes();  //Global attribute object which manages the value
+//var levelCreate = new LevelCreate();
 var currentLevel;                   //Holds what the current level is.
 var winCondition;                   //Holds the win condition for the level. This function is checked every game update.
 var onStart;                        //Function called at level creation to add level specific components into the game.
@@ -16,9 +17,13 @@ Main.prototype = {
         this.createPhysics();                       //Creates the physics of the game.
         this.createWorld();                         //Creates the world for the game.
         this.createPlayer();                        //Creates and loads the player into the game.
+        this.createGoal();
+        this.createGems();
         this.game.input.onDown.add(togglePause,this);  //Add a onDown functions to game.
-        game.physics.p2.setImpactEvents(true);      //Important: allows sprites to trigger impact events.
-        onStart(this);
+        this.game.physics.p2.setImpactEvents(true);      //Important: allows sprites to trigger impact events.
+
+        //text.text = game.add.text(16, 16, 'Drag the sprites. Overlapping: False', { fill: '#ffffff' });
+
     },
 
     update: function()
@@ -29,11 +34,7 @@ Main.prototype = {
         //Load the objective screen if just starting level.
         if(localStorage.atLevelBeginning === "true")
             goToObjective();
-        //The sprite should be facing the way they are moving.
-        if(attributes.velocity() < 0)
-            this.player.scale.x = -1;
-        else
-            this.player.scale.x = 1;
+
 
         //Flips the character left of right depending on which way their velocity is. 1 is right, -1 is left.
         if(attributes.velocity() < 0)
@@ -50,6 +51,9 @@ Main.prototype = {
         else
             this.player.loadTexture("avatar", 0);
 
+        this.checkOverlapManually(this.gems);
+        this.checkOverlapManually(this.goals);
+      
         this.updateGameAttributes();
     },
     //Called every game update and updates the attribute amount if any changes were made.
@@ -138,7 +142,6 @@ Main.prototype = {
             }
         } return result;
     },
-
     createPhysics: function()
     {
         // Starts the Phaser P2 Physics Engine
@@ -146,28 +149,28 @@ Main.prototype = {
         // Set the initial gravity.
         this.game.physics.p2.gravity.y = attributes.gravity();
     },
-    //Creates and places the players character in the game.
+
     createPlayer: function()
     {
-        this.player = this.game.add.sprite(currentLevel.characterInfo.x, currentLevel.characterInfo.y, currentLevel.characterInfo.name);
-        //places character in world
+        var result = this.findObjectsByType('playerStart', this.mymap, 'entities');
+        this.player = this.game.add.sprite(result[0].x, result[0].y, 'avatar');
         this.game.physics.p2.enable(this.player);
 
-        //Follow player
+        this.player.physicsBodyType = Phaser.Physics.P2JS;
         this.player.anchor.setTo(0.5,0.5);
-        this.game.camera.follow(this.player);
-
         //gives player a circle hitbox (radius,offestx,offsety)
         this.player.body.setCircle(22,0,0);
-
         //wouldn't want the character tumbling over
         this.player.body.fixedRotation=true;
-
+        //the camera will follow the player in the world
+        this.game.camera.follow(this.player);
         //adds animation
         this.player.animations.add('walk', [1,2,3], 10, true);
-    },
+        this.player.animations.play('walk');
 
-    //Create the environment of the game.
+        //fun
+        //this.player.scale.set(2);
+    },
     createWorld: function()
     {
         //Used to determine which level to load in.
@@ -177,26 +180,126 @@ Main.prototype = {
         this.mymap = this.game.add.tilemap(levelName);
         this.mymap.addTilesetImage('bkg_tileset');
 
-        //creates layers matching the .json testlevel
-        this.layerbackground = this.mymap.createLayer('Bkg');
-        this.mymap.createLayer('BkgDetails1');
-        this.mymap.createLayer('BkgDetails2');
-        this.mymap.createLayer('BkgDetails3');
-        this.mymap.createLayer('BlockDetails');
-        this.mymap.createLayer('Block');
+        //creates layers matching the .json levels
+        this.backgroundlayer = this.mymap.createLayer('bkgDetail3');
+        this.mymap.createLayer('bkgDetail2');
+        this.mymap.createLayer('bkgDetail1');
+        this.mymap.createLayer('block');
 
-        //this.mymap.createLayer("testObjects");
         //we resize the world to the background as it will be covering the entire level
-        this.layerbackground.resizeWorld();
+        this.backgroundlayer.resizeWorld();
 
-        this.game.physics.p2.convertCollisionObjects(this.mymap, "objects1");
+        this.game.physics.p2.convertCollisionObjects(this.mymap, "collisionTerrain");
 
+    },
+    //creates collectable gems from level file
+    createGems: function()
+    {
+        //create gem group
+        this.gems = this.game.add.group();
+        this.gems.enableBody = true;
+        this.gems.name = 'gems'; // used for identifying group
+        //this.gems.physicsBodyType = Phaser.Physics.P2JS;
+
+        result = this.findObjectsByType('gem', this.mymap, 'entities');
+        result.forEach(function(element){
+            this.createFromTiledObject(element, this.gems);
+
+        }, this);
+
+        this.gems.forEachExists(function(temp) {
+            //Add the sprite to the game.
+            this.game.physics.p2.enable(temp, false);
+            //Creates a 'sensor' that triggers an event whenever the player collides with it.
+            temp.body.setCircle(15);
+            //Set the point object to remain static in the game (ie. wont fall).
+            temp.body.static = false; //unnecessary but shows potential
+
+        });
+    },
+    //creates goals from level file
+    createGoal: function()
+    {
+        //create goal group
+        this.goals = this.game.add.group();
+        this.goals.enableBody = true;
+        this.goals.name = 'goals';
+
+        //gets an array of objects
+        result = this.findObjectsByType('goal', this.mymap, 'entities');
+        var goal;
+        result.forEach(function(element){
+            goal = this.createFromTiledObject(element, this.goals);
+
+        }, this);
+
+        this.goals.forEachExists(function(temp) {
+            //Add the sprite to the game.
+            this.game.physics.p2.enable(temp, false);
+            //Creates a 'sensor' that triggers an event whenever the player collides with it.
+            temp.body.setCircle(25);
+            //Set the point object to remain static in the game (ie. wont fall).
+            temp.body.static = true;
+        });
+        //  Now using the power of callAll we can add the same animation to all goals in the group:
+        this.goals.callAll('animations.add', 'animations', 'fly', [0, 1, 2, 3], 4, true);
+
+        //  And play them
+        this.goals.callAll('animations.play', 'animations', 'fly');
+    },
+    //find objects in a Tiled layer that containt a property called "type" equal to a certain value
+    findObjectsByType: function(type, map, layer) {
+        var result = new Array();
+        map.objects[layer].forEach(function(element){
+            if(element.properties.type === type) {
+                //Phaser uses top left, Tiled bottom left so we have to adjust
+                //also keep in mind that the cup images are a bit smaller than the tile which is 16x16
+                //so they might not be placed in the exact position as in Tiled
+                element.y -= map.tileHeight;
+                result.push(element);
+            }
+        });
+        return result;
+    },
+    //create a sprite from an object
+    createFromTiledObject: function(element, group)
+    {
+        var sprite = group.create(element.x, element.y, element.properties.sprite);
+
+        //copy all properties to the sprite
+        Object.keys(element.properties).forEach(function(key){
+            sprite[key] = element.properties[key];
+        });
+    },
+
+    //finds if a group of objects touch the player
+    checkOverlapManually: function(group)
+    {
+        var playerX = this.player.x;
+        var playerY = this.player.y;
+        //console.log(group);
+        group.forEachExists(function(entity)
+        {
+            var dx = playerX - entity.x;  //distance ship X to enemy X
+            var dy = playerY - entity.y;  //distance ship Y to enemy Y
+            var dist = Math.sqrt(dx*dx + dy*dy);     //pythagoras ^^  (get the distance to each other)
+            if (dist < 50)
+            {  // if distance to each other is smaller than both radii together a collision/overlap is happening
+                if(group.name === 'gems')
+                {
+                    entity.destroy();
+                }
+                else if (group.name === 'goals')
+                {
+                    window.location.href = 'Score_Page.html';
+                }
+            }
+        });
     },
     loadLevelAttributeInfo: function()
     {
         switch(parseInt(getCurrentLevel()))
         {
-
             case 1:
                 currentLevel = levels.level1;
                 attributes.setAttributes(currentLevel.attribute1,currentLevel.attribute2,currentLevel.attribute3);
@@ -258,49 +361,7 @@ Main.prototype = {
         addToScreen(attributes.attr2.name,2,5);
         addToScreen(attributes.attr3.name,3,6);
     },
-    //Adds a point object to the game. Calls pointCollisionEvent when the player hits it.
-    addPointObject: function(x,y)
-    {
-        //Creates a new point object as a sprite.
-        var temp = this.game.add.sprite(x,y,'star');
-        //Enable the physics on the sprite.
-        temp.enableBody = true;
-        //Add the sprite to the game.
-        this.game.physics.p2.enable(temp,false);
-        //Creates a 'sensor' that triggers an event whenever the player collides with it.
-        temp.body.setCircle(25);
-        //Set the point object to remain static in the game (ie. wont fall).
-        temp.body.static = true;
-        //Adds a callback event for whenever the player collides with it.
-        temp.body.createBodyCallback(this.player,pointCollisionEvent,this.game);
 
-        function pointCollisionEvent(bodyA,bodyB)
-        {
-            bodyA.sprite.destroy();
-        }
-    },
-    addGoal: function(x,y)
-    {
-        //Creates a new point object as a sprite.
-        var temp = this.game.add.sprite(x,y,'goal');
-        //Enable the physics on the sprite.
-        temp.enableBody = true;
-        //Add the sprite to the game.
-        this.game.physics.p2.enable(temp,false);
-        //Creates a 'sensor' that triggers an event whenever the player collides with it.
-        temp.body.setCircle(25);
-        //Set the point object to remain static in the game (ie. wont fall).
-        temp.body.static = true;
-        //Adds a callback event for whenever the player collides with it.
-        temp.body.createBodyCallback(this.player,goalCollisionEvent,this.game);
-
-        function goalCollisionEvent(bodyA,bodyB)
-        {
-            window.location.href = 'Score_Page.html';
-        }
-        temp.animations.add('fly', [0,1,2,3], 4, true);
-        temp.animations.play('fly');
-    }
 };
 
 //Toggles between the pause and un-pause states of the game.

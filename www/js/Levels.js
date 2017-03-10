@@ -2,8 +2,6 @@
  *
  *  winCondition is a function that is called each game update and is used to determine if the player wins.
  *
- *  onStart is a function that is called when the game is created to add level specific objects (ex. goal) to the game.
- *
  *  onUpdate is a function that is called each game update.
  *
  *  attribute1, attribute2, and attribute 3 are the 3 attributes modeled on the attribute bars.
@@ -17,16 +15,11 @@
  *      price: How much the affected attribute will change by when the button for this one if pressed.
  *
  *      Note: the value of 0 for coupled indicated that it is not coupled to any attribute.
- *
- *  characterInfo holds the starting location and sprite image for the players character.
  */
 var levels = {
     level1: {
         winCondition: function(thisRef) {
 
-        },
-        onStart: function(thisRef) {
-            thisRef.addGoal(200,150);
         },
         onUpdate: function(thisRef) {
 
@@ -34,13 +27,10 @@ var levels = {
         attribute1: {name:"gravity",max:1000,min:0,init:500,jump:100,coupled:0,price:0},
         attribute2: {name:"velocity",max:500,min:-500,init:0,jump:50,coupled:0,price:0},
         attribute3: {name:"elasticity",max:10,min:0,init:0,jump:1,coupled:0,price:0},
-        characterInfo: {x:200,y:200,name:"avatar"}
+
     },
     level2: {
         winCondition: function(thisRef) {
-
-        },
-        onStart: function(thisRef) {
 
         },
         onUpdate: function(thisRef) {
@@ -49,8 +39,6 @@ var levels = {
         attribute1: {name:"gravity",max:10,min:0,init:0,jump:1},
         attribute2: {name:"velocity",max:10,min:0,init:0,jump:1},
         attribute3: {name:"elasticity",max:10,min:0,init:0,jump:1},
-        characterInfo: {x:200,y:200,name:"avatar"}
     }
-
 };
 
