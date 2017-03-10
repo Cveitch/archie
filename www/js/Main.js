@@ -20,7 +20,7 @@ Main.prototype = {
         game.physics.p2.setImpactEvents(true);      //Important: allows sprites to trigger impact events.
         onStart(this);
     },
-  
+
     update: function()
     {
         //Check the win condition.
@@ -43,38 +43,102 @@ Main.prototype = {
             this.player.scale.x = 1;
 
         //Updates the characters animation to match what they are doing.
-        if(!this.isTouchingDown(this.player))
+        if(!this.isTouchingDirection(this.player,"down"))
             this.player.loadTexture("avatar", 4);
         else if(attributes.velocity() != 0)
             this.player.animations.play('walk');
         else
             this.player.loadTexture("avatar", 0);
 
-
         this.updateGameAttributes();
     },
     //Called every game update and updates the attribute amount if any changes were made.
     updateGameAttributes: function()
     {
-        this.player.body.velocity.x = attributes.velocity();
+        //Gets whether the player is hitting obstacles in any of the directions. These are created so the functions only
+        // need to be called once.
+        var touchingUp = this.isTouchingDirection(this.player,"up");
+        var touchingDown = this.isTouchingDirection(this.player,"down");
+        var touchingLeft = this.isTouchingDirection(this.player,"left");
+        var touchingRight = this.isTouchingDirection(this.player,"right");
         this.game.physics.p2.gravity.y = attributes.gravity();
 
+        //Gets the current velocity.
+        var newVelocity = attributes.velocity();
+        //If the player hits an object and has a speed going in the direction they hit, then reset it to 0.
+        //This is important since if only checking left/right, the player cannot move away from the edge.
+        if((touchingRight && newVelocity > 0) || (touchingLeft && newVelocity < 0))
+        {
+            this.player.body.velocity.x = attributes.updateAttributeAmountFromGame("velocity",0);
+        }
+        else
+        {
+            //Only allow for velocity to increase when the player is on the ground. Wouldn't make sense otherwise.
+            if(touchingDown)
+            {
+                //Get the new velocity using the equation vf = vo +at.
+                //0.1 is used to scale the acceleration to a more appropriate value for the game.
+                newVelocity = attributes.velocity() + attributes.acceleration()*this.time.elapsed*0.1;
+                this.player.body.velocity.x = attributes.updateAttributeAmountFromGame("velocity",newVelocity);
+            }
+        }
     },
-  
-    isTouchingDown: function(object)
+
+    /**
+     * Determines whether the given object is touching a surface in the direction given.
+     * @param object - the sprite to test for.
+     * @param direction - which direction to test for (up, down, left, right)
+     * @returns boolean - true if touching, false if not.
+     */
+    isTouchingDirection: function(object, direction)
     {
-        var yAxis = p2.vec2.fromValues(0, 1);
+        //Axis indicates whether testing for left/right or up/down
+        //Strength is how steep the surface must be for it to count. To avoid having the sprite move up hills count as
+        //left / right collision, they have value +-0.75. Where as down has only 0.2 meaning it doesn't need to be to steep.
+        var axis, strength;
         var result = false;
+        //Determines what direction we want to check based on the given input.
+        switch(direction)
+        {
+            //The values 1,0 indicate the y-axis where as 1,0 indicates the x-axis.
+            case "up":
+                axis = p2.vec2.fromValues(0, 1);
+                strength = -0.2;
+                break;
+            case "down":
+                axis = p2.vec2.fromValues(0, 1);
+                strength = 0.2;
+                break;
+            case "left":
+                axis = p2.vec2.fromValues(1, 0);
+                strength = -0.75;
+                break;
+            case "right":
+                axis = p2.vec2.fromValues(1, 0);
+                strength = 0.75;
+                break;
+        }
+        //Iterates over P2's contact equations to see if any involve the given object.
         for (var i = 0; i < game.physics.p2.world.narrowphase.contactEquations.length; i++) {
-            var c = game.physics.p2.world.narrowphase.contactEquations[i];  // cycles through all the contactEquations until it finds our "someone"
+            var c = game.physics.p2.world.narrowphase.contactEquations[i];
             if (c.bodyA === object.body.data || c.bodyB === object.body.data)        {
-                var d = p2.vec2.dot(c.normalA, yAxis); // Normal dot Y-axis
+                var d = p2.vec2.dot(c.normalA, axis); // Normal dot Y-axis
                 if (c.bodyA === object.body.data) d *= -1;
-                if (d > 0.2) result = true;
+                //Down and right need to be greater for it to be true.
+                if(direction == "down" || direction == "right")
+                {
+                    if (d > strength) result = true;
+                }
+                //Up and left need to be smaller.
+                else
+                {
+                    if (d < strength) result = true;
+                }
+
             }
         } return result;
     },
-  
+
     createPhysics: function()
     {
         // Starts the Phaser P2 Physics Engine
@@ -143,7 +207,7 @@ Main.prototype = {
             //TODO: add other levels.
         }
     },
-  
+
     loadPauseScreenInfo: function()
     {
         //This function takes the attribute number and assigns the images, text, and onclick's to the pause screen.
@@ -156,8 +220,8 @@ Main.prototype = {
                     document.getElementById("button_"+upperContainer+"_text").innerHTML = "Increase Gravity";
                     document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_gravityDecreaseBlue.png";
                     document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Gravity";
-                    document.getElementById("button_"+upperContainer+"_image").onclick = function () {attributes.updateAttributeAmount(upperContainer,true);};
-                    document.getElementById("button_"+lowerContainer+"_image").onclick = function () {attributes.updateAttributeAmount(upperContainer,false);};
+                    document.getElementById("button_"+upperContainer+"_image").onclick = function () {attributes.updateAttributeAmountFromButton(upperContainer,true);};
+                    document.getElementById("button_"+lowerContainer+"_image").onclick = function () {attributes.updateAttributeAmountFromButton(upperContainer,false);};
                     document.getElementById("attributeBar_"+upperContainer+"_label").innerHTML = "Gravity";
                     break;
                 case "velocity":
@@ -165,8 +229,8 @@ Main.prototype = {
                     document.getElementById("button_"+upperContainer+"_text").innerHTML = "Increase Velocity";
                     document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_velocityLeftBlue.png";
                     document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Velocity";
-                    document.getElementById("button_"+upperContainer+"_image").onclick= function () {attributes.updateAttributeAmount(upperContainer,true);};
-                    document.getElementById("button_"+lowerContainer+"_image").onclick= function () {attributes.updateAttributeAmount(upperContainer,false);};
+                    document.getElementById("button_"+upperContainer+"_image").onclick= function () {attributes.updateAttributeAmountFromButton(upperContainer,true);};
+                    document.getElementById("button_"+lowerContainer+"_image").onclick= function () {attributes.updateAttributeAmountFromButton(upperContainer,false);};
                     document.getElementById("attributeBar_"+upperContainer+"_label").innerHTML = "Velocity";
                     break;
                 case "elasticity":
@@ -174,8 +238,8 @@ Main.prototype = {
                     document.getElementById("button_"+upperContainer+"_text").innerHTML = "Increase Spring";
                     document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_springDecreaseBlue.png";
                     document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Spring";
-                    document.getElementById("button_"+upperContainer+"_image").onclick=function () {attributes.updateAttributeAmount(upperContainer,true);};
-                    document.getElementById("button_"+lowerContainer+"_image").onclick=function () {attributes.updateAttributeAmount(upperContainer,false);};
+                    document.getElementById("button_"+upperContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(upperContainer,true);};
+                    document.getElementById("button_"+lowerContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(upperContainer,false);};
                     document.getElementById("attributeBar_"+upperContainer+"_label").innerHTML = "Spring";
                     break;
                 case "friction":
@@ -183,8 +247,8 @@ Main.prototype = {
                     document.getElementById("button_"+upperContainer+"_text").innerHTML = "Increase Friction";
                     document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_frictionDownBlue.png";
                     document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Friction";
-                    document.getElementById("button_"+upperContainer+"_image").onclick=function () {attributes.updateAttributeAmount(upperContainer,true);};
-                    document.getElementById("button_"+lowerContainer+"_image").onclick=function () {attributes.updateAttributeAmount(upperContainer,false);};
+                    document.getElementById("button_"+upperContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(upperContainer,true);};
+                    document.getElementById("button_"+lowerContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(upperContainer,false);};
                     document.getElementById("attributeBar_"+upperContainer+"_label").innerHTML = "Friction";
                     break;
             }
