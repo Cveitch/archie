@@ -7,6 +7,8 @@ var onUpdate;                       //Holds the win condition for the level. Thi
 
 var Main = function(game) {/*This function allows "Main" to be accessed by the game instance.*/};
 
+
+
 Main.prototype = {
     //Called once at the start of the game to create and load everything in.
     create: function()

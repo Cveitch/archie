@@ -7,7 +7,7 @@
         jumboMode="false"
         optimize="true"
         revision="23.0.3"
-        sha1="d2629be308515d6f76509ec1299b9cc2e10bf453">
+        sha1="82725ae203999df257d992b59ab97da8204b2800">
         <dex dex="/Users/Tim/Desktop/JavaScript/Arch-2017/archie/platforms/android/build/intermediates/pre-dexed/debug/CordovaLib-unspecified-debug_43ebdfe945312b2d583663678ffe99cc650c258d.jar" />
     </item>
 

@@ -15,9 +15,9 @@
                     "position": {
                         "startLine": 4,
                         "startColumn": 4,
-                        "startOffset": 164,
+                        "startOffset": 163,
                         "endColumn": 63,
-                        "endOffset": 223
+                        "endOffset": 222
                     }
                 }
             },
@@ -26,8 +26,8 @@
                     "startLine": 3,
                     "startColumn": 4,
                     "startOffset": 119,
-                    "endColumn": 49,
-                    "endOffset": 164
+                    "endColumn": 48,
+                    "endOffset": 163
                 },
                 "from": {
                     "file": "/Users/Tim/Desktop/JavaScript/Arch-2017/archie/platforms/android/res/values/strings.xml",
@@ -35,8 +35,8 @@
                         "startLine": 2,
                         "startColumn": 4,
                         "startOffset": 55,
-                        "endColumn": 49,
-                        "endOffset": 100
+                        "endColumn": 48,
+                        "endOffset": 99
                     }
                 }
             },
@@ -44,18 +44,18 @@
                 "to": {
                     "startLine": 4,
                     "startColumn": 4,
-                    "startOffset": 169,
+                    "startOffset": 168,
                     "endColumn": 58,
-                    "endOffset": 223
+                    "endOffset": 222
                 },
                 "from": {
                     "file": "/Users/Tim/Desktop/JavaScript/Arch-2017/archie/platforms/android/res/values/strings.xml",
                     "position": {
                         "startLine": 3,
                         "startColumn": 4,
-                        "startOffset": 105,
+                        "startOffset": 104,
                         "endColumn": 58,
-                        "endOffset": 159
+                        "endOffset": 158
                     }
                 }
             }
