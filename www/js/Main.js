@@ -21,6 +21,8 @@ Main.prototype = {
         this.createPlayer();                        //Creates and loads the player into the game.
         this.createGoal();
         this.createGems();
+        this.createBBlocks();
+        this.createSpikes();
         this.game.input.onDown.add(togglePause,this);  //Add a onDown functions to game.
         this.game.physics.p2.setImpactEvents(true);      //Important: allows sprites to trigger impact events.
 
@@ -55,6 +57,9 @@ Main.prototype = {
 
         this.checkOverlapManually(this.gems);
         this.checkOverlapManually(this.goals);
+
+        this.checkOverlapManually(this.spikeSeed);
+        this.checkOverlapManually(this.breakBlock);
 
         this.updateGameAttributes();
     },
@@ -219,6 +224,59 @@ Main.prototype = {
 
         });
     },
+    //creates collectable gems from level file
+    createSpikes: function()
+    {
+        //create gem group
+        this.spikeSeed = this.game.add.group();
+        this.spikeSeed.enableBody = true;
+        this.spikeSeed.name = 'spikeSeed'; // used for identifying group
+        //this.gems.physicsBodyType = Phaser.Physics.P2JS;
+
+        result = this.findObjectsByType('spikeSeed', this.mymap, 'entities');
+        result.forEach(function(element){
+            this.createFromTiledObject(element, this.spikeSeed);
+
+        }, this);
+
+        this.spikeSeed.forEachExists(function(temp) {
+            //Add the sprite to the game.
+            this.game.physics.p2.enable(temp, false);
+            //Creates a 'sensor' that triggers an event whenever the player collides with it.
+            temp.body.setCircle(15);
+            //Set the point object to remain static in the game (ie. wont fall).
+            temp.body.static = false; //unnecessary but shows potential
+
+        });
+    },
+    //creates collectable gems from level file
+    createBBlocks: function()
+    {
+        //create gem group
+        this.breakBlock = this.game.add.group();
+        this.breakBlock.enableBody = true;
+        this.breakBlock.name = 'breakBlock'; // used for identifying group
+        this.breakBlock.physicsBodyType = Phaser.Physics.P2JS;
+
+        result = this.findObjectsByType('breakBlock', this.mymap, 'entities');
+        result.forEach(function(element){
+            this.createFromTiledObject(element, this.breakBlock);
+
+        }, this);
+
+        this.breakBlock.forEachExists(function(temp) {
+            //Add the sprite to the game.
+            this.game.physics.p2.enable(temp, true);
+            //Creates a 'sensor' that triggers an event whenever the player collides with it.
+            temp.body.setCircle(15);
+
+            temp.body.x = temp.x + 16;
+            temp.body.y = temp.y + 16;
+            //Set the point object to remain static in the game (ie. wont fall).
+            temp.body.static = true; //unnecessary but shows potential
+
+        });
+    },
     //creates goals from level file
     createGoal: function()
     {
@@ -282,10 +340,10 @@ Main.prototype = {
         //console.log(group);
         group.forEachExists(function(entity)
         {
-            var dx = playerX - entity.x;  //distance ship X to enemy X
-            var dy = playerY - entity.y;  //distance ship Y to enemy Y
+            var dx = playerX - (entity.x + (entity.width/2));  //distance ship X to enemy X
+            var dy = playerY - (entity.y + (entity.height/2));  //distance ship Y to enemy Y
             var dist = Math.sqrt(dx*dx + dy*dy);     //pythagoras ^^  (get the distance to each other)
-            if (dist < 50)
+            if (dist < 65)
             {  // if distance to each other is smaller than both radii together a collision/overlap is happening
                 if(group.name === 'gems')
                 {
@@ -294,6 +352,17 @@ Main.prototype = {
                 else if (group.name === 'goals')
                 {
                     window.location.href = 'Score_Page.html';
+                }
+                else if (group.name === 'spikeSeed')
+                {
+                    window.location.href = 'Sprite_Page.html';
+                }
+                else if (group.name === 'breakBlock')
+                {
+                    if (attributes.gravity()> 100)
+                    {
+                        entity.destroy();
+                    }
                 }
             }
         });
@@ -309,6 +378,13 @@ Main.prototype = {
                 onStart = currentLevel.onStart;
                 onUpdate = currentLevel.onUpdate;
                 loopQueue = new LoopQueue(currentLevel.queueSize);
+                break;
+            case 2:
+                currentLevel = levels.level2;
+                attributes.setAttributes(currentLevel.attribute1,currentLevel.attribute2,currentLevel.attribute3);
+                winCondition = currentLevel.winCondition;
+                onStart = currentLevel.onStart;
+                onUpdate = currentLevel.onUpdate;
                 break;
             //TODO: add other levels.
         }
