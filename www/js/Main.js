@@ -1,5 +1,6 @@
 var attributes = new Attributes();  //Global attribute object which manages the value
-//var levelCreate = new LevelCreate();
+var loopQueue;
+
 var currentLevel;                   //Holds what the current level is.
 var winCondition;                   //Holds the win condition for the level. This function is checked every game update.
 var onStart;                        //Function called at level creation to add level specific components into the game.
@@ -14,6 +15,7 @@ Main.prototype = {
         localStorage.atLevelBeginning = "true";     //Used to signal to the game to first got o the objective screen.
         this.loadLevelAttributeInfo();              //Loads the level specific info into the game.
         this.loadPauseScreenInfo();                 //Loads the proper pause screen info into the game.
+        this.loadAttributeQueueInfo();              //Loads the attribute queue info into the game.
         this.createPhysics();                       //Creates the physics of the game.
         this.createWorld();                         //Creates the world for the game.
         this.createPlayer();                        //Creates and loads the player into the game.
@@ -53,7 +55,7 @@ Main.prototype = {
 
         this.checkOverlapManually(this.gems);
         this.checkOverlapManually(this.goals);
-      
+
         this.updateGameAttributes();
     },
     //Called every game update and updates the attribute amount if any changes were made.
@@ -306,6 +308,7 @@ Main.prototype = {
                 winCondition = currentLevel.winCondition;
                 onStart = currentLevel.onStart;
                 onUpdate = currentLevel.onUpdate;
+                loopQueue = new LoopQueue(currentLevel.queueSize);
                 break;
             //TODO: add other levels.
         }
@@ -314,53 +317,59 @@ Main.prototype = {
     loadPauseScreenInfo: function()
     {
         //This function takes the attribute number and assigns the images, text, and onclick's to the pause screen.
-        function addToScreen(attrName,upperContainer,lowerContainer)
+        function addToScreen(attrName,upperContainer,lowerContainer,barNum)
         {
             switch(attrName)
             {
                 case "gravity":
                     document.getElementById("button_"+upperContainer+"_image").src = "assets/images/Buttons/spr_gravityIncreaseBlue.png";
-                    document.getElementById("button_"+upperContainer+"_text").innerHTML = "Increase Gravity";
+                    document.getElementById("button_"+upperContainer+"_text").innerHTML = "Gravity";
                     document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_gravityDecreaseBlue.png";
-                    document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Gravity";
-                    document.getElementById("button_"+upperContainer+"_image").onclick = function () {attributes.updateAttributeAmountFromButton(upperContainer,true);};
-                    document.getElementById("button_"+lowerContainer+"_image").onclick = function () {attributes.updateAttributeAmountFromButton(upperContainer,false);};
-                    document.getElementById("attributeBar_"+upperContainer+"_label").innerHTML = "Gravity";
+                    //document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Gravity";
+                    document.getElementById("button_"+upperContainer+"_image").onclick = function () {attributes.updateAttributeAmountFromButton(barNum,true);};
+                    document.getElementById("button_"+lowerContainer+"_image").onclick = function () {attributes.updateAttributeAmountFromButton(barNum,false);};
+                    document.getElementById("attributeBar_"+barNum+"_label").innerHTML = "Gravity";
                     break;
                 case "velocity":
                     document.getElementById("button_"+upperContainer+"_image").src = "assets/images/Buttons/spr_velocityRightBlue.png";
-                    document.getElementById("button_"+upperContainer+"_text").innerHTML = "Increase Velocity";
+                    document.getElementById("button_"+upperContainer+"_text").innerHTML = "Velocity";
                     document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_velocityLeftBlue.png";
-                    document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Velocity";
-                    document.getElementById("button_"+upperContainer+"_image").onclick= function () {attributes.updateAttributeAmountFromButton(upperContainer,true);};
-                    document.getElementById("button_"+lowerContainer+"_image").onclick= function () {attributes.updateAttributeAmountFromButton(upperContainer,false);};
-                    document.getElementById("attributeBar_"+upperContainer+"_label").innerHTML = "Velocity";
+                    //document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Velocity";
+                    document.getElementById("button_"+upperContainer+"_image").onclick= function () {attributes.updateAttributeAmountFromButton(barNum,true);};
+                    document.getElementById("button_"+lowerContainer+"_image").onclick= function () {attributes.updateAttributeAmountFromButton(barNum,false);};
+                    document.getElementById("attributeBar_"+barNum+"_label").innerHTML = "Velocity";
                     break;
                 case "elasticity":
                     document.getElementById("button_"+upperContainer+"_image").src = "assets/images/Buttons/spr_springIncreaseBlue.png";
-                    document.getElementById("button_"+upperContainer+"_text").innerHTML = "Increase Spring";
+                    document.getElementById("button_"+upperContainer+"_text").innerHTML = "Spring";
                     document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_springDecreaseBlue.png";
-                    document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Spring";
-                    document.getElementById("button_"+upperContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(upperContainer,true);};
-                    document.getElementById("button_"+lowerContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(upperContainer,false);};
-                    document.getElementById("attributeBar_"+upperContainer+"_label").innerHTML = "Spring";
+                    //document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Spring";
+                    document.getElementById("button_"+upperContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,true);};
+                    document.getElementById("button_"+lowerContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,false);};
+                    document.getElementById("attributeBar_"+barNum+"_label").innerHTML = "Spring";
                     break;
                 case "friction":
                     document.getElementById("button_"+upperContainer+"_image").src = "assets/images/Buttons/spr_frictionUpBlue.png";
-                    document.getElementById("button_"+upperContainer+"_text").innerHTML = "Increase Friction";
+                    document.getElementById("button_"+upperContainer+"_text").innerHTML = "IFriction";
                     document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_frictionDownBlue.png";
-                    document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Friction";
-                    document.getElementById("button_"+upperContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(upperContainer,true);};
-                    document.getElementById("button_"+lowerContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(upperContainer,false);};
-                    document.getElementById("attributeBar_"+upperContainer+"_label").innerHTML = "Friction";
+                    //document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Friction";
+                    document.getElementById("button_"+upperContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,true);};
+                    document.getElementById("button_"+lowerContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,false);};
+                    document.getElementById("attributeBar_"+barNum+"_label").innerHTML = "Friction";
                     break;
             }
         }
         //Call the above function for each attribute, passing in which buttons to modify.
-        addToScreen(attributes.attr1.name,1,4);
-        addToScreen(attributes.attr2.name,2,5);
-        addToScreen(attributes.attr3.name,3,6);
+        addToScreen(attributes.attr1.name,1,2,1);
+        addToScreen(attributes.attr2.name,3,4,2);
+        addToScreen(attributes.attr3.name,5,6,3);
     },
+
+    loadAttributeQueueInfo: function()
+    {
+        document.getElementById("loop_button").onclick = function() {loopQueue.addToQueue()};
+        document.getElementById("reset_loop_button").onclick = function() {loopQueue.resetQueue()};
+    }
 
 };
 
@@ -384,6 +393,6 @@ function togglePause()
 function retryLevel()
 {
     //vibrates the phone for feed back
-    
+
     window.location.href = 'Sprite_Page.html';
 }
