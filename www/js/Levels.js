@@ -15,6 +15,8 @@
  *      price: How much the affected attribute will change by when the button for this one if pressed.
  *
  *      Note: the value of 0 for coupled indicated that it is not coupled to any attribute.
+ *
+ *  queueSize is the maxSize the attribute queue can be.
  */
 var levels = {
     level1: {
@@ -27,6 +29,7 @@ var levels = {
         attribute1: {name:"gravity",max:1000,min:0,init:500,jump:100,coupled:0,price:0},
         attribute2: {name:"velocity",max:500,min:-500,init:0,jump:50,coupled:0,price:0},
         attribute3: {name:"elasticity",max:10,min:0,init:0,jump:1,coupled:0,price:0},
+        queueSize: 10
 
     },
     level2: {
@@ -39,6 +42,7 @@ var levels = {
         attribute1: {name:"gravity",max:1000,min:0,init:500,jump:100,coupled:0,price:0},
         attribute2: {name:"velocity",max:500,min:-500,init:0,jump:50,coupled:0,price:0},
         attribute3: {name:"elasticity",max:10,min:0,init:0,jump:1,coupled:0,price:0},
+        queueSize: 10
     }
 };
 

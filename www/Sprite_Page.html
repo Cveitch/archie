@@ -12,6 +12,7 @@
         localStorage.level = 1;
     </script>
 
+    <script type = "text/javascript" src = "js/LoopQueue.js"></script>
     <script type = "text/javascript" src = "js/Levels.js"></script>
     <script type = "text/javascript" src = "js/Attributes.js"></script>
     <script type = "text/javascript" src = "js/AttributeBars.js"></script>
@@ -151,6 +152,14 @@
             font-family:        Verdana,Geneva,sans-serif;
             color: #242424;
         }
+        .groupingBox
+        {
+            background-color: rgba(255,147,108,0.4);
+            border-radius: 35px;
+            border: 3px solid #587299;
+
+        }
+
         html,body
         {
             padding:            0;
@@ -217,6 +226,7 @@
     <!-- The pause screen layer of the page -->
     <div id="buttonLayer" class="pauseScreen" style="display: none; position: absolute; z-index: 2;">
         <div>
+
             <!-- This table holds the continue and reset buttons and labels.-->
             <table id = "gameOptions" class="buttonTable buttonTextFormat">
                 <tr>
@@ -228,27 +238,54 @@
                     <td align="center">Restart</td>
                 </tr>
             </table>
-            <!-- This table holds the attribute buttons and labels -->
-            <table id = "attributeOptions" class="buttonTable buttonTextFormat">
+
+            <!-- This table holds the looping options -->
+            <table id = "loopOptions" class="groupingBox buttonTable buttonTextFormat">
                 <tr>
-                    <td align="center"><img id="button_1_image" src=""></td>
-                    <td align="center"><img id="button_2_image" src=""></td>
-                    <td align="center"><img id="button_3_image" src=""></td>
+                    <td align="left" style="width:15vw; padding-left: 5vw;"><img id="loop_button" src="assets/images/Buttons/spr_cancelBlue.png"></td>
+                    <td style="border-right: 3px solid #587299; width: 1vw"></td>
+                    <td align="center" ><table id="queueTable"></table></td>
+                    <td style="border-left: 3px solid #587299; width: 1vw"></td>
+                    <td align="right" style="width:15vw; padding-right: 5vw"><img id="reset_loop_button" src="assets/images/Buttons/spr_cancelBlue.png"></td>
                 </tr>
+            </table>
+
+            <!-- This table holds all the buttons for the attribute bars -->
+            <table class="buttonTable buttonTextFormat">
                 <tr>
-                    <td align="center" id="button_1_text"></td>
-                    <td align="center" id="button_2_text"></td>
-                    <td align="center" id="button_3_text"></td>
-                </tr>
-                <tr>
-                    <td align="center"><img id="button_4_image" src=""></td>
-                    <td align="center"><img id="button_5_image" src=""></td>
-                    <td align="center"><img id="button_6_image" src=""></td>
-                </tr>
-                <tr>
-                    <td align="center" id="button_4_text"></td>
-                    <td align="center" id="button_5_text"></td>
-                    <td align="center" id="button_6_text"></td>
+                    <td class="groupingBox">
+                        <table id = "attribute_group_1" class="buttonTextFormat" style="width:100%">
+                            <tr>
+                                <td style="text-align: right"><img id="button_1_image" src="" style="padding-right: 1vw;"></td>
+                                <td style="text-align: left"><img id="button_2_image" src="" style="padding-left: 1vw;"></td>
+                            </tr>
+                            <tr >
+                                <td colspan="2" style="text-align: center" id="button_1_text"></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="groupingBox" align="center">
+                        <table id = "attribute_group_2" class="buttonTextFormat" style="width:100%">
+                            <tr>
+                                <td style="text-align: right"><img id="button_3_image" src="" style="padding-right: 1vw;"></td>
+                                <td style="text-align: left"><img id="button_4_image" src="" style="padding-left: 1vw;"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="text-align: center" id="button_3_text"></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="groupingBox" align="center">
+                        <table id = "attribute_group_3" class="buttonTextFormat" style="width:100%">
+                            <tr>
+                                <td style="text-align: right"><img id="button_5_image" src="" style="padding-right: 1vw;"></td>
+                                <td style="text-align: left"><img id="button_6_image" src="" style="padding-left: 1vw;"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="text-align: center" id="button_5_text"></td>
+                            </tr>
+                        </table>
+                    </td>
                 </tr>
             </table>
         </div>
