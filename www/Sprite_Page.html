@@ -159,6 +159,24 @@
             border: 3px solid #587299;
 
         }
+        .buttonPositioner
+        {
+            position:relative;
+            top:-32px;
+            left:-32px;
+            height: 64px;
+        }
+        .buttonBack
+        {
+
+            position: absolute;
+            z-index: 1;
+        }
+        .floatButtonIcon
+        {
+            position: absolute;
+            z-index: 5;
+        }
 
         html,body
         {
@@ -184,6 +202,7 @@
             //Startup the physics
             game.state.start("Boot");
         }
+
     </script>
 </head>
 
@@ -213,6 +232,15 @@
         //Allows the same level to be replayed
         initiate();
     }
+
+    function changeButtonRed(buttonBack)
+    {
+            document.getElementById(buttonBack).src="assets/images/Buttons/spr_redback.png";
+    }
+    function changeButtonBlue(buttonBack)
+    {
+        document.getElementById(buttonBack).src="assets/images/Buttons/spr_blueback.png";
+    }
 </script>
 <!--Clears float for align function-->
 <div style="clear: both;"></div>
@@ -227,11 +255,19 @@
     <div id="buttonLayer" class="pauseScreen" style="display: none; position: absolute; z-index: 2;">
         <div>
 
-            <!-- This table holds the continue and reset buttons and labels.-->
+            <!-- This table holds the continue and reset buttons and labels.
+            each button has 2 parts a button back which changes red when moused over and an icon which floats above it-->
             <table id = "gameOptions" class="buttonTable buttonTextFormat">
                 <tr>
-                    <td align="center"><img src="assets/images/Buttons/spr_cancelBlue.png" onclick="togglePause()"></td>
-                    <td align="center"><img src="assets/images/Buttons/spr_retryBlue.png" onclick="retryLevel()"></td>
+                    <td align="center" class="buttonPositioner">
+                        <img id="cancelBack" class="buttonBack" top="32px" src="assets/images/Buttons/spr_blueback.png" >
+                        <img class="floatButtonIcon" src="assets/images/Buttons/spr_cancel.png" onmouseover="changeButtonRed('cancelBack')" onmouseout="changeButtonBlue('cancelBack')" onclick="togglePause()">
+                    </td>
+
+                    <td align="center" class="buttonPositioner">
+                        <img id="retryBack" class="buttonBack" top="32px" src="assets/images/Buttons/spr_blueback.png" >
+                        <img class="floatButtonIcon" src="assets/images/Buttons/spr_retry.png" onmouseover="changeButtonRed('retryBack')" onmouseout="changeButtonBlue('retryBack')" onclick="retryLevel()">
+                    </td>
                 </tr>
                 <tr>
                     <td align="center">Continue</td>
@@ -242,11 +278,17 @@
             <!-- This table holds the looping options -->
             <table id = "loopOptions" class="groupingBox buttonTable buttonTextFormat">
                 <tr>
-                    <td align="left" style="width:15vw; padding-left: 5vw;"><img id="loop_button" src="assets/images/Buttons/spr_cancelBlue.png"></td>
+                    <td align="left" class="buttonPositioner" style="width:15vw; padding-left: 5vw;">
+                        <img id="loopBack" class="buttonBack" src="assets/images/Buttons/spr_blueback.png" >
+                        <img id="loop_button" class="floatButtonIcon"  src="assets/images/Buttons/spr_loop.png" onmouseover="changeButtonRed('loopBack')" onmouseout="changeButtonBlue('loopBack')">
+                    </td>
                     <td style="border-right: 3px solid #587299; width: 1vw"></td>
                     <td align="center" ><table id="queueTable"></table></td>
                     <td style="border-left: 3px solid #587299; width: 1vw"></td>
-                    <td align="right" style="width:15vw; padding-right: 5vw"><img id="reset_loop_button" src="assets/images/Buttons/spr_cancelBlue.png"></td>
+                    <td align="right" class="buttonPositioner" style="width:15vw; padding-right: 5vw">
+                        <img id="clearBack" class="buttonBack" src="assets/images/Buttons/spr_blueback.png" >
+                        <img id="reset_loop_button" class="floatButtonIcon" src="assets/images/Buttons/spr_clear.png" onmouseover="changeButtonRed('clearBack')" onmouseout="changeButtonBlue('clearBack')">
+                    </td>
                 </tr>
             </table>
 
@@ -256,8 +298,14 @@
                     <td class="groupingBox">
                         <table id = "attribute_group_1" class="buttonTextFormat" style="width:100%">
                             <tr>
-                                <td style="text-align: right"><img id="button_1_image" src="" style="padding-right: 1vw;"></td>
-                                <td style="text-align: left"><img id="button_2_image" src="" style="padding-left: 1vw;"></td>
+                                <td align="center" class="buttonPositioner">
+                                    <img id="but1Back" class="buttonBack" src="assets/images/Buttons/spr_blueback.png" >
+                                    <img id="button_1_image" class="floatButtonIcon" src="" onmouseover="changeButtonRed('but1Back')" onmouseout="changeButtonBlue('but1Back')">
+                                </td>
+                                <td align="center" class="buttonPositioner">
+                                    <img id="but2Back" class="buttonBack" src="assets/images/Buttons/spr_blueback.png" >
+                                    <img id="button_2_image" class="floatButtonIcon" src="" onmouseover="changeButtonRed('but2Back')" onmouseout="changeButtonBlue('but2Back')">
+                                </td>
                             </tr>
                             <tr >
                                 <td colspan="2" style="text-align: center" id="button_1_text"></td>
@@ -267,8 +315,14 @@
                     <td class="groupingBox" align="center">
                         <table id = "attribute_group_2" class="buttonTextFormat" style="width:100%">
                             <tr>
-                                <td style="text-align: right"><img id="button_3_image" src="" style="padding-right: 1vw;"></td>
-                                <td style="text-align: left"><img id="button_4_image" src="" style="padding-left: 1vw;"></td>
+                                <td align="center" class="buttonPositioner">
+                                    <img id="but3Back" class="buttonBack" src="assets/images/Buttons/spr_blueback.png" >
+                                    <img id="button_3_image" class="floatButtonIcon" src="" onmouseover="changeButtonRed('but3Back')" onmouseout="changeButtonBlue('but3Back')">
+                                </td>
+                                <td align="center" class="buttonPositioner">
+                                    <img id="but4Back" class="buttonBack" src="assets/images/Buttons/spr_blueback.png" >
+                                    <img id="button_4_image" class="floatButtonIcon" src="" onmouseover="changeButtonRed('but4Back')" onmouseout="changeButtonBlue('but4Back')">
+                                </td>
                             </tr>
                             <tr>
                                 <td colspan="2" style="text-align: center" id="button_3_text"></td>
@@ -278,8 +332,14 @@
                     <td class="groupingBox" align="center">
                         <table id = "attribute_group_3" class="buttonTextFormat" style="width:100%">
                             <tr>
-                                <td style="text-align: right"><img id="button_5_image" src="" style="padding-right: 1vw;"></td>
-                                <td style="text-align: left"><img id="button_6_image" src="" style="padding-left: 1vw;"></td>
+                                <td align="center" class="buttonPositioner">
+                                    <img id="but5Back" class="buttonBack" src="assets/images/Buttons/spr_blueback.png" >
+                                    <img id="button_5_image" class="floatButtonIcon" src="" onmouseover="changeButtonRed('but5Back')" onmouseout="changeButtonBlue('but5Back')">
+                                </td>
+                                <td align="center" class="buttonPositioner">
+                                    <img id="but6Back" class="buttonBack" src="assets/images/Buttons/spr_blueback.png" >
+                                    <img id="button_6_image" class="floatButtonIcon" src="" onmouseover="changeButtonRed('but6Back')" onmouseout="changeButtonBlue('but6Back')">
+                                </td>
                             </tr>
                             <tr>
                                 <td colspan="2" style="text-align: center" id="button_5_text"></td>

@@ -17,7 +17,7 @@ LoopQueue.prototype.addToQueue = function()
     {
         //Adds a new element to the end of the queue, then set its content.
         var x = this.row.insertCell(-1);
-        x.innerHTML=" 1 ";
+        x.innerHTML=" <img src=\"assets/images/Buttons/spr_clear.png\" >";
         this.currentQueueSize++;
     }
 
