@@ -28,7 +28,7 @@ var levels = {
         },
         attribute1: {name:"gravity",max:1000,min:0,init:500,jump:100,coupled:0,price:0},
         attribute2: {name:"velocity",max:500,min:-500,init:0,jump:50,coupled:0,price:0},
-        attribute3: {name:"elasticity",max:10,min:0,init:0,jump:1,coupled:0,price:0},
+        attribute3: {name:"bounce",max:10,min:0,init:0,jump:1,coupled:0,price:0},
         queueSize: 10
 
     },
@@ -41,7 +41,7 @@ var levels = {
         },
         attribute1: {name:"gravity",max:1000,min:0,init:500,jump:100,coupled:0,price:0},
         attribute2: {name:"velocity",max:500,min:-500,init:0,jump:50,coupled:0,price:0},
-        attribute3: {name:"elasticity",max:10,min:0,init:0,jump:1,coupled:0,price:0},
+        attribute3: {name:"bounce",max:1,min:0,init:0,jump:0.1,coupled:0,price:0},
         queueSize: 10
     }
 };
