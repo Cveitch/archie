@@ -33,8 +33,8 @@ Attributes.prototype.setAttributes = function(attr1,attr2,attr3)
     this.velocity = function(){return 0};
     this.acceleration = function(){return 0};
     this.gravity = function(){return 500};
-    this.elasticity = function(){return 0};
-    this.friction = function(){return 0.5};
+    this.bounce = function(){return 0};
+    this.friction = function(){return 0};
 
     /* This function connects the generic attributes referenced throughout the file with the corresponding
      attribute that it represents. This is so that the game can set the attributes without having to do
@@ -50,11 +50,14 @@ Attributes.prototype.setAttributes = function(attr1,attr2,attr3)
             case "gravity":
                 thisRef.gravity = function(){return eval("this.attr"+attrNum+"CurrentVal;")};
                 break;
-            case "elasticity":
-                thisRef.elasticity = function(){return eval("this.attr"+attrNum+"CurrentVal;")};
+            case "bounce":
+                thisRef.bounce = function(){return eval("this.attr"+attrNum+"CurrentVal;")};
                 break;
             case "friction":
                 thisRef.friction = function(){return eval("this.attr"+attrNum+"CurrentVal;")};
+                break;
+            case "acceleration":
+                thisRef.acceleration = function(){return eval("this.attr"+attrNum+"CurrentVal;")};
                 break;
         }
     }
@@ -206,5 +209,9 @@ Attributes.prototype.updateAttributeAmountFromGame = function(attrName, amount)
         case this.attr3.name:
             return updateValueAndBar(3);
             break;
+        //If the attribute is not modeled on the bars, then return the value passed in. If this is not here, problems
+        //will occurs when trying to change values of attributes that are not there. In this case the character vanishes.
+        default:
+            return amount;
     }
 };
