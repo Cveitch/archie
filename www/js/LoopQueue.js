@@ -13,6 +13,7 @@ function LoopQueue(queueSize)
     this.currentQueueSize = 0;
     this.LoopArray = [];
     this.BeginArray = false; 
+   // this.Attributes = new Attributes(); 
 }
 
 //Appends an element to the queue.
@@ -36,7 +37,7 @@ LoopQueue.prototype.addToQueue = function(Attribute)
 LoopQueue.prototype.resetQueue = function()
 {
     //Delete the current row, then create a new one that is empty.  
-    this.table.deleteRow(0);
+   // this.table.deleteRow(0);
     this.row = this.table.insertRow(0);
     this.currentQueueSize = 0;
     //clear array
@@ -57,3 +58,22 @@ LoopQueue.prototype.GetBeginArray = function()
     return this.BeginArray; 
 
 };
+//Start itterating through the array and sending the information to move the char
+//this will go through the loop, and pass the information into the updatefrombuttons method
+//if the game is paused during this period, the array will clear. 
+//when it finishes the array, it starts again. 
+LoopQueue.prototype.BeginLoop = function()
+{
+    this.BeginArray = false; 
+    console.log("Length of array: "+this.LoopArray.length); 
+    for(var i = 0; i<this.LoopArray.length; i++)
+        {
+            attributes.updateAttributeAmountFromButton(this.LoopArray[i], true); 
+            //go back to the start
+            if(i == this.LoopArray.length-1)
+                {
+                    i =0; 
+                }
+        }
+    
+}

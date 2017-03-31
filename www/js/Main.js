@@ -458,11 +458,16 @@ function togglePause()
         document.getElementById("buttonLayer").style.display = "none";
         //this.game.add.text(175, 800, game.paused);
         this.game.paused = false;
+       // loopQueue.BeginLoop(); 
     }
     else
     {
         document.getElementById("buttonLayer").style.display = "block";
+        //when You unpause the game iterate through the looparray
         this.game.paused = true;
+        //when you pause the game, clear the loop array
+        loopQueue.resetQueue(); 
+       
     }
 }
 
