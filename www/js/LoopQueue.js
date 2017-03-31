@@ -65,6 +65,7 @@ LoopQueue.prototype.GetBeginArray = function()
 LoopQueue.prototype.BeginLoop = function()
 {
     this.BeginArray = false; 
+    console.log("the boolean is: "+this.BeginArray); 
     console.log("Length of array: "+this.LoopArray.length); 
     for(var i = 0; i<this.LoopArray.length; i++)
         {

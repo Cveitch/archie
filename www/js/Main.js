@@ -458,7 +458,6 @@ function togglePause()
         document.getElementById("buttonLayer").style.display = "none";
         //this.game.add.text(175, 800, game.paused);
         this.game.paused = false;
-       // loopQueue.BeginLoop(); 
     }
     else
     {
@@ -469,6 +468,7 @@ function togglePause()
         loopQueue.resetQueue(); 
        
     }
+    
 }
 
 //Reloads the page to reset the level.
