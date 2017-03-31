@@ -3,12 +3,12 @@
 
     <item
         is-multidex="false"
-        jar="/Users/Tim/Desktop/JavaScript/Arch-2017/archie/platforms/android/build/intermediates/exploded-aar/android/CordovaLib/unspecified/debug/jars/classes.jar"
+        jar="/Users/Tim/Desktop/JavaScript/Archi-2017/archie/platforms/android/build/intermediates/exploded-aar/android/CordovaLib/unspecified/debug/jars/classes.jar"
         jumboMode="false"
         optimize="true"
         revision="23.0.3"
         sha1="d2629be308515d6f76509ec1299b9cc2e10bf453">
-        <dex dex="/Users/Tim/Desktop/JavaScript/Arch-2017/archie/platforms/android/build/intermediates/pre-dexed/debug/CordovaLib-unspecified-debug_43ebdfe945312b2d583663678ffe99cc650c258d.jar" />
+        <dex dex="/Users/Tim/Desktop/JavaScript/Archi-2017/archie/platforms/android/build/intermediates/pre-dexed/debug/CordovaLib-unspecified-debug_199533b5ed328439c73cd44f118cab521696d837.jar" />
     </item>
 
 </items>

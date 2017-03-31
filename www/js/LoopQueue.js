@@ -1,5 +1,9 @@
 //This file holds all the logic behind the loop queue.
 
+
+
+
+
 //Constructor for a new loopQueue object.
 function LoopQueue(queueSize)
 {
@@ -7,6 +11,8 @@ function LoopQueue(queueSize)
     this.table = document.getElementById("queueTable");
     this.row = this.table.insertRow(0);
     this.currentQueueSize = 0;
+    this.LoopArray = []; 
+    this.Attribute = "Donkey"; 
 }
 
 //Appends an element to the queue.
@@ -17,6 +23,8 @@ LoopQueue.prototype.addToQueue = function()
     {
         //Adds a new element to the end of the queue, then set its content.
         var x = this.row.insertCell(-1);
+        this.LoopArray.push(this.Attribute); 
+        console.log(this.Attribute +"Pushed to array, size is now: "+this.LoopArray.length); 
         x.innerHTML=" <img src=\"assets/images/Buttons/spr_clear.png\" >";
         this.currentQueueSize++;
     }

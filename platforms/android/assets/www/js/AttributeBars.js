@@ -4,48 +4,131 @@
  */
 function AttributeBars()
 {
+    /* If each game update tries to set the attribute bars, then it causes them to freak out since the values keep
+     * changing. To get around this, if the attribute bar is already undergoing an update, just set the new value
+     * to this new amount and let the previous animation continue on. */
+    var newPercentBar1;
+    var newPercentBar2;
+    var newPercentBar3;
+    var currentPercentBar1;
+    var currentPercentBar2;
+    var currentPercentBar3;
+    var animatingBar1 = false;
+    var animatingBar2 = false;
+    var animatingBar3 = false;
     /**
      * Animates the bar moving between percent values.
-     * @param name
-     * @param newPercent
-     * @param currentPercent
+     * @param name - name of object whose width is to be updated.
+     * @param barNum - which attribute bar it is updating.
      */
-    function animate(name, newPercent, currentPercent)
+    function animate(name,barNum)
     {
-        //Makes sure the value is between the min and max percent values.
-        if(newPercent > 100)
+        switch(barNum)
         {
-            newPercent = 100;
-        }
-        else if(newPercent < 0)
-        {
-            newPercent = 0;
+            case 1:
+                animatingBar1 = true;
+                break;
+            case 2:
+                animatingBar2 = true;
+                break;
+            case 3:
+                animatingBar3 = true;
+                break;
         }
 
         var element = document.getElementById(name);
         var id = setInterval(frame, 5);
         function frame()
         {
-            //Stopping animation condition.
-            if(currentPercent > 100 || currentPercent < 0 || currentPercent == newPercent)
+            stopCheck(barNum,id);
+            frameCalculation(barNum,element);
+        }
+        /**
+         * Checks if the animation is complete, and if so stops the update of it.
+         * @param barNum - the attribute bar that it is moving.
+         * @param repetitionId - reference to the object that is updating it.
+         */
+        function stopCheck(barNum,repetitionId)
+        {
+            //One case for each attribute bar.
+            switch(barNum)
             {
-                clearInterval(id);
-            }
-            else
-            {
-                //Move the width value up or down depending if the new value is larger or smaller.
-                  if(currentPercent > newPercent)
-                  {
-                      currentPercent -= 1;
-                      element.style.width = (currentPercent) + "%";
-                  }
-                  else
-                  {
-                      currentPercent += 1;
-                      element.style.width = (currentPercent) + "%";
-                  }
+                case 1:
+                    if(currentPercentBar1 > 100 || currentPercentBar1 < 0 || currentPercentBar1 == newPercentBar1)
+                    {
+                        clearInterval(repetitionId);
+                        animatingBar1 = false;
+                    }
+                    break;
+                case 2:
+                    if(currentPercentBar2 > 100 || currentPercentBar2 < 0 || currentPercentBar2 == newPercentBar2)
+                    {
+                        clearInterval(repetitionId);
+                        animatingBar2 = false;
+                    }
+                    break;
+                case 3:
+                    if(currentPercentBar3 > 100 || currentPercentBar3 < 0 || currentPercentBar3 == newPercentBar3)
+                    {
+                        clearInterval(repetitionId);
+                        animatingBar3 = false;
+                    }
+                    break;
             }
         }
+
+        /**
+         * Computes each frame of the update.
+         * @param barNum
+         * @param element
+         */
+        function frameCalculation(barNum,element)
+        {
+            //Move the width value up or down depending if the new value is larger or smaller the the current.
+            //First computes the value, the sets the components new width.
+            switch(barNum)
+            {
+                case 1:
+                    if(currentPercentBar1 > newPercentBar1)
+                        currentPercentBar1 -= 1;
+                    else
+                        currentPercentBar1 += 1;
+                    element.style.width = (currentPercentBar1) + "%";
+                    break;
+                case 2:
+                    if(currentPercentBar2 > newPercentBar2)
+                        currentPercentBar2 -= 1;
+                    else
+                        currentPercentBar2 += 1;
+                    element.style.width = (currentPercentBar2) + "%";
+                    break;
+                case 3:
+                    if(currentPercentBar3 > newPercentBar3)
+                        currentPercentBar3 -= 1;
+                    else
+                        currentPercentBar3 += 1;
+                    element.style.width = (currentPercentBar3) + "%";
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Makes sure that the given percent falls between 0 and 100.
+     * @param percent
+     * @returns {*}
+     */
+    function validPercent(percent)
+    {
+        if(percent >= 100)
+        {
+            percent = 100;
+        }
+        else if(percent <= 0)
+        {
+            percent = 0;
+        }
+        return percent;
     }
 
     /**
@@ -65,8 +148,12 @@ function AttributeBars()
      */
     this.setAttributeBar_1 = function(percent)
     {
-        var currentPercent = calcCurrentWidthPercent('attributeBar_1_animate','attributeBar_1');
-        animate('attributeBar_1_animate',percent, currentPercent);
+        newPercentBar1 =  Math.round(validPercent(percent));
+        if(!animatingBar1)
+        {
+            currentPercentBar1 = calcCurrentWidthPercent('attributeBar_1_animate','attributeBar_1');
+            animate('attributeBar_1_animate',1);
+        }
     };
 
     /**
@@ -75,8 +162,12 @@ function AttributeBars()
      */
     this.setAttributeBar_2 = function(percent)
     {
-        var currentPercent = calcCurrentWidthPercent('attributeBar_2_animate','attributeBar_2');
-        animate('attributeBar_2_animate',percent, currentPercent);
+        newPercentBar2 =  Math.round(validPercent(percent));
+        if(!animatingBar2)
+        {
+            currentPercentBar2 = calcCurrentWidthPercent('attributeBar_2_animate','attributeBar_2');
+            animate('attributeBar_2_animate',2);
+        }
     };
 
     /**
@@ -85,8 +176,12 @@ function AttributeBars()
      */
     this.setAttributeBar_3 = function(percent)
     {
-        var currentPercent = calcCurrentWidthPercent('attributeBar_3_animate','attributeBar_3');
-        animate('attributeBar_3_animate',percent, currentPercent);
+        newPercentBar3 =  Math.round(validPercent(percent));
+        if(!animatingBar3)
+        {
+            currentPercentBar3 = calcCurrentWidthPercent('attributeBar_3_animate','attributeBar_3');
+            animate('attributeBar_3_animate',3);
+        }
     };
 
     /**
@@ -118,5 +213,5 @@ function AttributeBars()
         var currentPercent = calcCurrentWidthPercent('attributeBar_3_animate','attributeBar_3');
         animate('attributeBar_3_animate',currentPercent + changePercent, currentPercent);
     };
-    
+
 }

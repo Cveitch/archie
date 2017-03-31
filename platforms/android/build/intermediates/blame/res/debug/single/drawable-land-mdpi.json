@@ -2,5 +2,9 @@
     {
         "merged": "/Users/Tim/Desktop/JavaScript/Arch-2017/archie/platforms/android/build/intermediates/res/merged/debug/drawable-land-mdpi/screen.png",
         "source": "/Users/Tim/Desktop/JavaScript/Arch-2017/archie/platforms/android/res/drawable-land-mdpi/screen.png"
+    },
+    {
+        "merged": "/Users/Tim/Desktop/JavaScript/Archi-2017/archie/platforms/android/build/intermediates/res/merged/debug/drawable-land-mdpi/screen.png",
+        "source": "/Users/Tim/Desktop/JavaScript/Archi-2017/archie/platforms/android/res/drawable-land-mdpi/screen.png"
     }
 ]

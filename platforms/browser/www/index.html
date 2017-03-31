@@ -36,28 +36,102 @@
         * Enable eval(): add 'unsafe-eval' to default-src
     * Create your own at http://cspisawesome.com
     -->
-    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src *" /> -->
+    <link rel="stylesheet" type="text/css" href="Formatting.css">
+    <style>
 
-    <link rel="stylesheet" type="text/css" href="css/index.css" />
-    <title>Hello World</title>
-    <button type="button" onclick="window.location.href='Splash_Page.html';">
-        TO SPLASH
-    </button>
+        body {
+            padding: 0px;
+            margin: 0px;
+            background-color: black;
+        }
+        .inputBox
+        {
+            margin-bottom:  20px;
+            height:         10%;
+            width:          79%;
+            font-size:      15pt;
+            border-color:   #b6b6b6;
+            border-width:   medium;
+        }
+        /* Prevents the text box from having outline when it has the focus. */
+        .inputBox:focus
+        {
+            outline: none;
+        }
+
+        /* Container to be centered in the page. */
+        .Container
+        {
+            background:     #ffffff;
+            border-width:   thick;
+            border-style:   solid;
+            border-color:   #646464;
+        }
+
+        /* A wrapper container which allows from flexibility in arrangement *
+         * when it comes to changing orientation. */
+        .flex-wrapper
+        {
+            height:             100%;
+            min-height:         100%;
+            display:            flex;
+            justify-content:    center;
+            align-items:        center;
+        }
+
+        /* A item in the flex-wrapper. */
+        .flex-item
+        {
+            width:  250px;
+            height: 250px;
+        }
+
+        /* Formatting for the instructions. */
+        .paragraph
+        {
+            margin-left:    7%;
+            margin-right:   7%;
+            margin-bottom:  4%;
+            font-size:      15px;
+            text-indent:    10%;
+            text-align:     justify
+
+        }
+
+        /* When in portrait mode, modify the direction the boxes line up in to be a column  *
+         * When in landscape, they are in the regular default state and this doesn't apply. */
+        @media all and (orientation:portrait)
+        {
+            .flex-wrapper
+            {
+                flex-direction: column;
+            }
+        }
+
+        /* Makes the body extend the full page rather then just the size of the elements it holds. */
+        html,body { height: 100%; margin: 0px; padding: 0px; }
+
+    </style>
 </head>
 
-<body>
-    <div class="app">
-        <h1>HI PhoneGap</h1>
-        <div id="deviceready" class="blink">
-            <p class="event listening">Connecting to Device</p>
-            <p class="event received">Device is Ready</p>
-        </div>
-    </div>
-    <script type="text/javascript" src="cordova.js"></script>
-    <script type="text/javascript" src="js/index.js"></script>
-    <script type="text/javascript">
-        app.initialize();
-    </script>
+<body class="pageBackground" >
+
+<div id="signInContainer" class="flex-wrapper">
+<div id="usernameContainer" class="flex-item Container" align="center">
+    <h1 class="heading standardFormat"><u>Archie</u></h1>
+    <button onclick="window.location.href='Splash_Page.html'" class="standardButton" style="margin-bottom: 20%" >
+        START GAME
+    </button>
+
+
+</div>
+</div>
+
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/index.js"></script>
+<script type="text/javascript">
+    app.initialize();
+</script>
 </body>
 
 </html>

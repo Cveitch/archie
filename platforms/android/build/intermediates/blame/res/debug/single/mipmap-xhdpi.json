@@ -2,5 +2,9 @@
     {
         "merged": "/Users/Tim/Desktop/JavaScript/Arch-2017/archie/platforms/android/build/intermediates/res/merged/debug/mipmap-xhdpi/icon.png",
         "source": "/Users/Tim/Desktop/JavaScript/Arch-2017/archie/platforms/android/res/mipmap-xhdpi/icon.png"
+    },
+    {
+        "merged": "/Users/Tim/Desktop/JavaScript/Archi-2017/archie/platforms/android/build/intermediates/res/merged/debug/mipmap-xhdpi/icon.png",
+        "source": "/Users/Tim/Desktop/JavaScript/Archi-2017/archie/platforms/android/res/mipmap-xhdpi/icon.png"
     }
 ]
