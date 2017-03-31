@@ -443,7 +443,8 @@ Main.prototype = {
 
     loadAttributeQueueInfo: function()
     {
-        document.getElementById("loop_button").onclick = function() {loopQueue.addToQueue()};
+       // document.getElementById("loop_button").onclick = function() {loopQueue.addToQueue()};
+        document.getElementById("loop_button").onclick = function() {loopQueue.startToQueue()};
         document.getElementById("reset_loop_button").onclick = function() {loopQueue.resetQueue()};
     }
 
