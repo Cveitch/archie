@@ -58,11 +58,11 @@ Main.prototype = {
         else
             this.player.loadTexture("avatar", 0);
 
-        this.checkOverlapManually(this.gems);
-        this.checkOverlapManually(this.goals);
+        this.checkOverlapManually(this.gems, 40);
+        this.checkOverlapManually(this.goals, 60);
 
-        this.checkOverlapManually(this.spikeSeed);
-        this.checkOverlapManually(this.breakBlock);
+        this.checkOverlapManually(this.spikeSeed, 40);
+        this.checkOverlapManually(this.breakBlock, 65);
 
         this.updateGameAttributes();
     },
@@ -374,7 +374,7 @@ Main.prototype = {
     },
 
     //finds if a group of objects touch the player
-    checkOverlapManually: function(group)
+    checkOverlapManually: function(group, given_bounds)
     {
         var playerX = this.player.x;
         var playerY = this.player.y;
@@ -384,7 +384,7 @@ Main.prototype = {
             var dx = playerX - (entity.x + (entity.width/2));  //distance ship X to enemy X
             var dy = playerY - (entity.y + (entity.height/2));  //distance ship Y to enemy Y
             var dist = Math.sqrt(dx*dx + dy*dy);     //pythagoras ^^  (get the distance to each other)
-            if (dist < 65)
+            if (dist < given_bounds)
             {  // if distance to each other is smaller than both radii together a collision/overlap is happening
                 if(group.name === 'gems')
                 {
@@ -439,33 +439,40 @@ Main.prototype = {
             switch(attrName)
             {
                 case "gravity":
-                    document.getElementById("button_"+upperContainer+"_image").src = "assets/images/Buttons/spr_gravityIncreaseBlue.png";
+                    document.getElementById("button_"+upperContainer+"_image").src = "assets/images/Buttons/spr_gravityIncrease.png";
                     document.getElementById("button_"+upperContainer+"_text").innerHTML = "Gravity";
-                    document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_gravityDecreaseBlue.png";
+
+                    document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_gravityDecrease.png";
+                    //document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Gravity";
                     document.getElementById("button_"+upperContainer+"_image").onclick = function () {attributes.updateAttributeAmountFromButton(barNum,true);};
                     document.getElementById("button_"+lowerContainer+"_image").onclick = function () {attributes.updateAttributeAmountFromButton(barNum,false);};
                     document.getElementById("attributeBar_"+barNum+"_label").innerHTML = "Gravity";
                     break;
                 case "velocity":
-                    document.getElementById("button_"+upperContainer+"_image").src = "assets/images/Buttons/spr_velocityRightBlue.png";
+                    document.getElementById("button_"+upperContainer+"_image").src = "assets/images/Buttons/spr_velocityRight.png";
                     document.getElementById("button_"+upperContainer+"_text").innerHTML = "Velocity";
-                    document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_velocityLeftBlue.png";
+
+                    document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_velocityLeft.png";
+                    //document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Velocity";
                     document.getElementById("button_"+upperContainer+"_image").onclick= function () {attributes.updateAttributeAmountFromButton(barNum,true);};
                     document.getElementById("button_"+lowerContainer+"_image").onclick= function () {attributes.updateAttributeAmountFromButton(barNum,false);};
                     document.getElementById("attributeBar_"+barNum+"_label").innerHTML = "Velocity";
                     break;
+
                 case "bounce":
-                    document.getElementById("button_"+upperContainer+"_image").src = "assets/images/Buttons/spr_springIncreaseBlue.png";
+                    document.getElementById("button_"+upperContainer+"_image").src = "assets/images/Buttons/spr_springIncrease.png";
                     document.getElementById("button_"+upperContainer+"_text").innerHTML = "Bounce";
-                    document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_springDecreaseBlue.png";
+                    document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_springDecrease.png";
                     document.getElementById("button_"+upperContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,true);};
                     document.getElementById("button_"+lowerContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,false);};
                     document.getElementById("attributeBar_"+barNum+"_label").innerHTML = "Bounce";
                     break;
                 case "friction":
-                    document.getElementById("button_"+upperContainer+"_image").src = "assets/images/Buttons/spr_frictionUpBlue.png";
+
+                    document.getElementById("button_"+upperContainer+"_image").src = "assets/images/Buttons/spr_frictionUp.png";
                     document.getElementById("button_"+upperContainer+"_text").innerHTML = "Friction";
-                    document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_frictionDownBlue.png";
+                    document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_frictionDown.png";
+                    //document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Friction";
                     document.getElementById("button_"+upperContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,true);};
                     document.getElementById("button_"+lowerContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,false);};
                     document.getElementById("attributeBar_"+barNum+"_label").innerHTML = "Friction";
