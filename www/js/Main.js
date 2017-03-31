@@ -6,6 +6,9 @@ var winCondition;                   //Holds the win condition for the level. Thi
 var onStart;                        //Function called at level creation to add level specific components into the game.
 var onUpdate;                       //Holds the win condition for the level. This function is checked every game update.
 
+var currentlyOnGround = true;
+var previousYVelocities = [0];
+
 var Main = function(game) {/*This function allows "Main" to be accessed by the game instance.*/};
 
 Main.prototype = {
@@ -48,7 +51,7 @@ Main.prototype = {
             this.player.scale.x = 1;
 
         //Updates the characters animation to match what they are doing.
-        if(!this.isTouchingDirection(this.player,"down"))
+        if(!this.isTouchingDirection(this.player,"down",0.5))
             this.player.loadTexture("avatar", 4);
         else if(attributes.velocity() != 0)
             this.player.animations.play('walk');
@@ -68,10 +71,10 @@ Main.prototype = {
     {
         //Gets whether the player is hitting obstacles in any of the directions. These are created so the functions only
         // need to be called once.
-        var touchingUp = this.isTouchingDirection(this.player,"up");
-        var touchingDown = this.isTouchingDirection(this.player,"down");
-        var touchingLeft = this.isTouchingDirection(this.player,"left");
-        var touchingRight = this.isTouchingDirection(this.player,"right");
+        var touchingUp = this.isTouchingDirection(this.player,"up",-0.2);
+        var touchingDown = this.isTouchingDirection(this.player,"down",0.2);
+        var touchingLeft = this.isTouchingDirection(this.player,"left",-0.95);
+        var touchingRight = this.isTouchingDirection(this.player,"right",0.95);
         this.game.physics.p2.gravity.y = attributes.gravity();
 
         //Gets the current velocity.
@@ -89,9 +92,50 @@ Main.prototype = {
             {
                 //Get the new velocity using the equation vf = vo +at.
                 //0.1 is used to scale the acceleration to a more appropriate value for the game.
-                newVelocity = attributes.velocity() + attributes.acceleration()*this.time.elapsed*0.1;
+
+                //Take into account friction.
+                newVelocity += attributes.acceleration()*this.time.elapsed*0.1;
+
+                var frictionCalc = attributes.friction()*this.time.elapsed*0.1;
+                //Friction will always make your velocity approach 0.
+                if(newVelocity > 0)
+                {
+                    if(newVelocity - frictionCalc < 0)
+                        newVelocity = 0;
+                    else
+                        newVelocity = Math.floor(newVelocity-frictionCalc);
+                }
+                else
+                {
+                    if(newVelocity + frictionCalc > 0)
+                        newVelocity = 0;
+                    else
+                        newVelocity = Math.ceil(newVelocity+frictionCalc);
+                }
+
                 this.player.body.velocity.x = attributes.updateAttributeAmountFromGame("velocity",newVelocity);
             }
+        }
+
+        //This array is needed because by the time the player hits the ground, the y-velocity has already been canceled out.
+        //This array is used to hold the 10 previous velocities. Then when you hit the ground, you can take the max of these.
+        //Remove the head element if there are more then 10. This is to keep only the 10 previous velocities.
+        if(previousYVelocities.length > 10)
+            previousYVelocities.shift();
+        //Add the current velocity to the list.
+        previousYVelocities.push(this.player.body.velocity.y);
+
+        //If the player just touched the ground while they were previously in the air:
+        if(!currentlyOnGround && touchingDown)
+        {
+            //This is a minimum y-speed requirement to prevent multiple small bounces when moving across horizontal surface.
+            if(Math.abs(this.player.body.velocity.y) > 10)
+                this.player.body.velocity.y = -Math.max.apply(Math, previousYVelocities)*attributes.bounce();
+            currentlyOnGround = true;
+        }
+        else
+        {
+            currentlyOnGround = false;
         }
     },
 
@@ -99,14 +143,15 @@ Main.prototype = {
      * Determines whether the given object is touching a surface in the direction given.
      * @param object - the sprite to test for.
      * @param direction - which direction to test for (up, down, left, right)
+     * @param strength - specified how steep the angle between the object and the player is.
      * @returns boolean - true if touching, false if not.
      */
-    isTouchingDirection: function(object, direction)
+    isTouchingDirection: function(object, direction, strength)
     {
         //Axis indicates whether testing for left/right or up/down
         //Strength is how steep the surface must be for it to count. To avoid having the sprite move up hills count as
         //left / right collision, they have value +-0.75. Where as down has only 0.2 meaning it doesn't need to be to steep.
-        var axis, strength;
+        var axis;
         var result = false;
         //Determines what direction we want to check based on the given input.
         switch(direction)
@@ -114,19 +159,15 @@ Main.prototype = {
             //The values 1,0 indicate the y-axis where as 1,0 indicates the x-axis.
             case "up":
                 axis = p2.vec2.fromValues(0, 1);
-                strength = -0.2;
                 break;
             case "down":
                 axis = p2.vec2.fromValues(0, 1);
-                strength = 0.2;
                 break;
             case "left":
                 axis = p2.vec2.fromValues(1, 0);
-                strength = -0.75;
                 break;
             case "right":
                 axis = p2.vec2.fromValues(1, 0);
-                strength = 0.75;
                 break;
         }
         //Iterates over P2's contact equations to see if any involve the given object.
@@ -199,7 +240,7 @@ Main.prototype = {
         this.game.physics.p2.convertCollisionObjects(this.mymap, "collisionTerrain");
 
     },
-    //creates collectable gems from level file
+    //creates collectible gems from level file
     createGems: function()
     {
         //create gem group
@@ -243,7 +284,7 @@ Main.prototype = {
             //Add the sprite to the game.
             this.game.physics.p2.enable(temp, false);
             //Creates a 'sensor' that triggers an event whenever the player collides with it.
-            temp.body.setCircle(15);
+            temp.body.setCircle(50);
             //Set the point object to remain static in the game (ie. wont fall).
             temp.body.static = false; //unnecessary but shows potential
 
@@ -401,7 +442,6 @@ Main.prototype = {
                     document.getElementById("button_"+upperContainer+"_image").src = "assets/images/Buttons/spr_gravityIncreaseBlue.png";
                     document.getElementById("button_"+upperContainer+"_text").innerHTML = "Gravity";
                     document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_gravityDecreaseBlue.png";
-                    //document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Gravity";
                     document.getElementById("button_"+upperContainer+"_image").onclick = function () {attributes.updateAttributeAmountFromButton(barNum,true);};
                     document.getElementById("button_"+lowerContainer+"_image").onclick = function () {attributes.updateAttributeAmountFromButton(barNum,false);};
                     document.getElementById("attributeBar_"+barNum+"_label").innerHTML = "Gravity";
@@ -410,28 +450,34 @@ Main.prototype = {
                     document.getElementById("button_"+upperContainer+"_image").src = "assets/images/Buttons/spr_velocityRightBlue.png";
                     document.getElementById("button_"+upperContainer+"_text").innerHTML = "Velocity";
                     document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_velocityLeftBlue.png";
-                    //document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Velocity";
                     document.getElementById("button_"+upperContainer+"_image").onclick= function () {attributes.updateAttributeAmountFromButton(barNum,true);};
                     document.getElementById("button_"+lowerContainer+"_image").onclick= function () {attributes.updateAttributeAmountFromButton(barNum,false);};
                     document.getElementById("attributeBar_"+barNum+"_label").innerHTML = "Velocity";
                     break;
-                case "elasticity":
+                case "bounce":
                     document.getElementById("button_"+upperContainer+"_image").src = "assets/images/Buttons/spr_springIncreaseBlue.png";
-                    document.getElementById("button_"+upperContainer+"_text").innerHTML = "Spring";
+                    document.getElementById("button_"+upperContainer+"_text").innerHTML = "Bounce";
                     document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_springDecreaseBlue.png";
-                    //document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Spring";
                     document.getElementById("button_"+upperContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,true);};
                     document.getElementById("button_"+lowerContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,false);};
-                    document.getElementById("attributeBar_"+barNum+"_label").innerHTML = "Spring";
+                    document.getElementById("attributeBar_"+barNum+"_label").innerHTML = "Bounce";
                     break;
                 case "friction":
                     document.getElementById("button_"+upperContainer+"_image").src = "assets/images/Buttons/spr_frictionUpBlue.png";
-                    document.getElementById("button_"+upperContainer+"_text").innerHTML = "IFriction";
+                    document.getElementById("button_"+upperContainer+"_text").innerHTML = "Friction";
                     document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_frictionDownBlue.png";
-                    //document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Friction";
                     document.getElementById("button_"+upperContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,true);};
                     document.getElementById("button_"+lowerContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,false);};
                     document.getElementById("attributeBar_"+barNum+"_label").innerHTML = "Friction";
+                    break;
+                    break;
+                case "acceleration":
+                    document.getElementById("button_"+upperContainer+"_image").src = "assets/images/Buttons/spr_accelerationRightBlue.png";
+                    document.getElementById("button_"+upperContainer+"_text").innerHTML = "Acceleration";
+                    document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_accelerationLeftBlue.png";
+                    document.getElementById("button_"+upperContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,true);};
+                    document.getElementById("button_"+lowerContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,false);};
+                    document.getElementById("attributeBar_"+barNum+"_label").innerHTML = "Acceleration";
                     break;
             }
         }
