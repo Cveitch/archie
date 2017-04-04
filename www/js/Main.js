@@ -1,6 +1,6 @@
 var attributes = new Attributes();  //Global attribute object which manages the value
-var loopQueue;
-
+var loopQueue = new LoopQueue(8);
+// loopQueue = new LoopQueue(currentLevel.queueSize);
 var currentLevel;                   //Holds what the current level is.
 var winCondition;                   //Holds the win condition for the level. This function is checked every game update.
 var onStart;                        //Function called at level creation to add level specific components into the game.
@@ -65,6 +65,8 @@ Main.prototype = {
         this.checkOverlapManually(this.breakBlock, 65);
 
         this.updateGameAttributes();
+        
+
     },
     //Called every game update and updates the attribute amount if any changes were made.
     updateGameAttributes: function()
@@ -137,6 +139,7 @@ Main.prototype = {
         {
             currentlyOnGround = false;
         }
+        
     },
 
     /**
@@ -418,7 +421,7 @@ Main.prototype = {
                 winCondition = currentLevel.winCondition;
                 onStart = currentLevel.onStart;
                 onUpdate = currentLevel.onUpdate;
-                loopQueue = new LoopQueue(currentLevel.queueSize);
+               // loopQueue = new LoopQueue(currentLevel.queueSize);
                 break;
             case 2:
                 currentLevel = levels.level2;
@@ -506,10 +509,13 @@ Main.prototype = {
 //Toggles between the pause and un-pause states of the game.
 function togglePause()
 {
+    
+    
     if(this.game.paused)
     {
         document.getElementById("buttonLayer").style.display = "none";
         //this.game.add.text(175, 800, game.paused);
+     
         this.game.paused = false;
     }
     else
@@ -521,6 +527,7 @@ function togglePause()
         loopQueue.resetQueue(); 
        
     }
+  
     
 }
 

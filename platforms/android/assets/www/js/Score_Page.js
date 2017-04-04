@@ -45,7 +45,7 @@ function nextLevel()
 {
     //Resets the variables used to generate the equations.
     resetVariables();
-    increaseLevel();
+    incrementCurrentLevel();
     localStorage.attempt = 0;
     localStorage.currentLevel = Number(localStorage.currentLevel) + 1;
     window.location.href = 'Sprite_Page.html';

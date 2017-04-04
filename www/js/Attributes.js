@@ -95,6 +95,7 @@ Attributes.prototype.updateAttributeBar = function(attrNum)
  * @param isPositive*/
 Attributes.prototype.updateAttributeAmountFromButton = function(attrNum, isPositive)
 {
+    
     //Don't do anything if the value is the max and your trying to increment or value is min and trying to decrement.
     if(!((isPositive && eval("this.attr"+attrNum+"CurrentVal == this.attr"+attrNum+".max")) || (!isPositive && eval("this.attr"+attrNum+"CurrentVal == this.attr"+attrNum+".min"))))
     {
@@ -110,7 +111,7 @@ Attributes.prototype.updateAttributeAmountFromButton = function(attrNum, isPosit
                 var coupledNum = eval("this.attr"+attrNum+".coupled");
                 var coupledPrice = eval("this.attr"+attrNum+".price");
                 //If the coupled attribute doesn't have over the price, the don't change.
-                //If coupledNum == 0, then this attribute is not coupled so continue.
+                //If coupledNum == 0, then this attribute is not coupled se.
                 if(eval("(this.attr"+coupledNum+"CurrentVal >= coupledPrice) || coupledNum == 0"))
                 {
                     //Increments or decrements the number based on the isPositive param.
@@ -143,16 +144,18 @@ Attributes.prototype.updateAttributeAmountFromButton = function(attrNum, isPosit
         //if tru add to array
         else if(this.ArrayCheck)
             {
-                loopQueue.addToQueue(attrNum);
-                console.log(attrNum + " has been added to the array."); 
+                loopQueue.addToQueue(attrNum, isPositive);
+                console.log(attrNum +"&"+isPositive + " :has been added to the array."); 
             }
         
     }
     
     //Updates the attribute bar to reflect changes.
     this.updateAttributeBar(attrNum);
+            
     //vibrates when a button is clicked for time in ms
     window.navigator.vibrate(50);
+        
 
 };
 
