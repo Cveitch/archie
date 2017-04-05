@@ -1,16 +1,19 @@
 var attributes = new Attributes();  //Global attribute object which manages the value
-var loopQueue = new LoopQueue(8);
 // loopQueue = new LoopQueue(currentLevel.queueSize);
-var currentLevel;                   //Holds what the current level is.
+var currentLevel;  //Holds what the current level is.
+var loopQueue = new LoopQueue(10);
 var winCondition;                   //Holds the win condition for the level. This function is checked every game update.
 var onStart;                        //Function called at level creation to add level specific components into the game.
-var onUpdate;                       //Holds the win condition for the level. This function is checked every game update.
+var onUpdate;     //Holds the win condition for the level. This function is checked every game update.
+var delayTime = 50; //the time it takes for the loop to go to the next element
 
 var currentlyOnGround = true;
 var previousYVelocities = [0];
 
 var Main = function(game) {/*This function allows "Main" to be accessed by the game instance.*/};
-
+//keep track of location in array and time elapsed
+var i =0; 
+var elapsed =0;
 Main.prototype = {
     //Called once at the start of the game to create and load everything in.
     create: function()
@@ -65,6 +68,32 @@ Main.prototype = {
         this.checkOverlapManually(this.breakBlock, 65);
 
         this.updateGameAttributes();
+        
+        
+         console.log("Looparraysize: "+ loopQueue.LoopArray.length); 
+        //update
+        if(elapsed > delayTime && loopQueue.LoopArray[i] != null )
+           {
+               loopQueue.BeginArray = false; 
+               elapsed = 0; 
+           attributes.updateAttributeAmountFromButton(loopQueue.LoopArray[i],loopQueue.BoolArray[i]);
+               console.log("updated");  
+               i++; 
+               console.log("i"+i); 
+               if(loopQueue.LoopArray[i] == null)
+                   {
+                     i=0; 
+
+                   }
+            }
+    elapsed++; 
+      //  console.log("ELAPSED"+elapsed); 
+        //keep track of ellapsed game time
+        
+        //time.update?????
+        //keep track of points
+        //if its first time add all the buttons for points
+        //else add one at the beginning. 
         
 
     },
