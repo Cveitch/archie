@@ -145,8 +145,7 @@ Attributes.prototype.updateAttributeAmountFromButton = function(attrNum, isPosit
         else if(this.ArrayCheck)
             {
                 loopQueue.addToQueue(attrNum, isPositive);
-                console.log(attrNum +" & "+isPositive + " :has been added to the array."); 
-                this.ArrayCheck = false; 
+                console.log(attrNum +"&"+isPositive + " :has been added to the array."); 
             }
         
     }

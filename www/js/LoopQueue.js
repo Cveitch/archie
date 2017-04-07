@@ -61,8 +61,6 @@ LoopQueue.prototype.GetBeginArray = function()
     return this.BeginArray; 
 
 };
-
-/*
 //Start itterating through the array and sending the information to move the char
 //this will go through the loop, and pass the information into the updatefrombuttons method
 //if the game is paused during this period, the array will clear. 
@@ -76,15 +74,27 @@ LoopQueue.prototype.BeginLoop = function()
     //while the game is not paused loop
     var a =0; 
 //if not paused go
-   
+   // if(!paused)
+        {
     for(var i = 0; i<this.LoopArray.length; i++)
         {
             attributes.updateAttributeAmountFromButton(this.LoopArray[i], this.BoolArray[i]); 
             console.log("using"+this.LoopArray[i]+ " with " + this.BoolArray[i]); 
+            //wait before executing next step
+           this.Wait(1000); 
             //go back to the start
+            if(i == this.LoopArray.length-1)
+                {
+                        a++;
+                }
         }
-        
+        }
     
 };
-*/
-
+LoopQueue.prototype.Wait = function(ms){
+   var start = new Date().getTime();
+   var end = start;
+   while(end < start + ms) {
+     end = new Date().getTime();
+  }
+}

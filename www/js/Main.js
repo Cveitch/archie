@@ -1,19 +1,16 @@
 var attributes = new Attributes();  //Global attribute object which manages the value
+var loopQueue = new LoopQueue(8);
 // loopQueue = new LoopQueue(currentLevel.queueSize);
-var currentLevel;  //Holds what the current level is.
-var loopQueue = new LoopQueue(10);
+var currentLevel;                   //Holds what the current level is.
 var winCondition;                   //Holds the win condition for the level. This function is checked every game update.
 var onStart;                        //Function called at level creation to add level specific components into the game.
-var onUpdate;     //Holds the win condition for the level. This function is checked every game update.
-var delayTime = 50; //the time it takes for the loop to go to the next element
+var onUpdate;                       //Holds the win condition for the level. This function is checked every game update.
 
 var currentlyOnGround = true;
 var previousYVelocities = [0];
 
 var Main = function(game) {/*This function allows "Main" to be accessed by the game instance.*/};
-//keep track of location in array and time elapsed
-var i =0; 
-var elapsed =0;
+
 Main.prototype = {
     //Called once at the start of the game to create and load everything in.
     create: function()
@@ -68,32 +65,6 @@ Main.prototype = {
         this.checkOverlapManually(this.breakBlock, 65);
 
         this.updateGameAttributes();
-        
-        
-         console.log("Looparraysize: "+ loopQueue.LoopArray.length); 
-        //update
-        if(elapsed > delayTime && loopQueue.LoopArray[i] != null )
-           {
-               loopQueue.BeginArray = false; 
-               elapsed = 0; 
-           attributes.updateAttributeAmountFromButton(loopQueue.LoopArray[i],loopQueue.BoolArray[i]);
-               console.log("updated");  
-               i++; 
-               console.log("i"+i); 
-               if(loopQueue.LoopArray[i] == null)
-                   {
-                     i=0; 
-
-                   }
-            }
-    elapsed++; 
-      //  console.log("ELAPSED"+elapsed); 
-        //keep track of ellapsed game time
-        
-        //time.update?????
-        //keep track of points
-        //if its first time add all the buttons for points
-        //else add one at the beginning. 
         
 
     },
@@ -381,6 +352,7 @@ Main.prototype = {
         this.goals.callAll('animations.play', 'animations', 'fly');
     },
     //find objects in a Tiled layer that containt a property called "type" equal to a certain value
+    //source of work detailed in level creation guide
     findObjectsByType: function(type, map, layer) {
         var result = new Array();
         map.objects[layer].forEach(function(element){
@@ -395,6 +367,7 @@ Main.prototype = {
         return result;
     },
     //create a sprite from an object
+    //source of work detailed in level creation guide
     createFromTiledObject: function(element, group)
     {
         var sprite = group.create(element.x, element.y, element.properties.sprite);
@@ -406,6 +379,7 @@ Main.prototype = {
     },
 
     //finds if a group of objects touch the player
+    //source of work detailed in level creation guide
     checkOverlapManually: function(group, given_bounds)
     {
         var playerX = this.player.x;
@@ -421,6 +395,7 @@ Main.prototype = {
                 if(group.name === 'gems')
                 {
                     entity.destroy();
+                    incrementPoints(1);
                 }
                 else if (group.name === 'goals')
                 {
