@@ -24,12 +24,40 @@ LoopQueue.prototype.addToQueue = function(Attribute,Direction)
     if(this.currentQueueSize < this.maxQueueSize)
     {
         //Adds a new element to the end of the queue, then set its content.
-       // var x = this.row.insertCell(-1);
+        var x = this.row.insertCell(-1);
         this.LoopArray.push(Attribute); 
         this.BoolArray.push(Direction); 
         console.log(Attribute +" Pushed to array, size is now: "+this.LoopArray.length); 
         //TODO this should be changed to the sprite iteslf, this can be based on the attribute number that gets passed. 
-        //x.innerHTML=" <img src=\"assets/images/Buttons/spr_clear.png\" >";
+        var l; 
+        //hard coded for now. switch out later
+        switch(Attribute)
+                {
+            case 1:
+                    if(Direction == false)
+                {
+                l = "spr_gravityDecrease.png";
+                }
+                else
+                l = "spr_gravityIncrease.png"; 
+                
+            case 2:
+                 if(Direction == false)
+                {
+                l = "spr_velocityLeft.png";
+                }
+                else
+                l = "spr_velocityRight.png"; 
+            case 3:
+                 if(Direction == false)
+                {
+                l = "spr_springDecrease.png";
+                }
+                else
+                l = "spr_springIncrease.png"; 
+        }
+        
+        x.innerHTML=" <img src=\"assets/images/Buttons/"+l+"\" >";
         //add switch for attribute pics
         this.currentQueueSize++;
     }
