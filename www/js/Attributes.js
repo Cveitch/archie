@@ -9,7 +9,6 @@
 function Attributes()
 {
     this.attrBars = new AttributeBars();
-    this.loopQueue = new LoopQueue(8); 
 }
 //Sets the objects variables to their proper amounts given a array of the form:
 //{name: string, max: int, min: int, init: int, jump: int}
@@ -39,7 +38,7 @@ Attributes.prototype.setAttributes = function(attr1,attr2,attr3)
     /* This function connects the generic attributes referenced throughout the file with the corresponding
      attribute that it represents. This is so that the game can set the attributes without having to do
      a check each time to see what the name of the attribute corresponds too. If a attribute is not used
-     in a level, then the default value assigned above is used i place.*/
+     in a level, then the default value assigned above is used in place.*/
     function interlockVariables(attrName, attrNum, thisRef)
     {
         switch(attrName)
@@ -88,76 +87,92 @@ Attributes.prototype.updateAttributeBar = function(attrNum)
 };
 /* There are two ways for the attributes amounts to be changed. The first is when the user presses the buttons on the
  * pause screen. The second is when they are changed indirectly from the game (IE, acceleration causes the velocity
- * to change over time). Each of these changes are modeled in the next 2 functions. */
+ * to change over time). */
 
 /**Updates the attitudes when the player presses a button on the pause screen.
  * @param attrNum
  * @param isPositive*/
 Attributes.prototype.updateAttributeAmountFromButton = function(attrNum, isPositive)
 {
-    
-    //Don't do anything if the value is the max and your trying to increment or value is min and trying to decrement.
-    if(!((isPositive && eval("this.attr"+attrNum+"CurrentVal == this.attr"+attrNum+".max")) || (!isPositive && eval("this.attr"+attrNum+"CurrentVal == this.attr"+attrNum+".min"))))
+    if(!loopQueue.AddingToArray)
     {
-        //if you are not looping than do things normally
-        this.ArrayCheck = loopQueue.GetBeginArray(); 
-                console.log("val: "+this.ArrayCheck); 
-
-        
-        //if false, do it normally
-        if(!this.ArrayCheck)
-            {
-                //Get the attribute number and the price for the coupled attribute.
-                var coupledNum = eval("this.attr"+attrNum+".coupled");
-                var coupledPrice = eval("this.attr"+attrNum+".price");
-                //If the coupled attribute doesn't have over the price, the don't change.
-                //If coupledNum == 0, then this attribute is not coupled se.
-                if(eval("(this.attr"+coupledNum+"CurrentVal >= coupledPrice) || coupledNum == 0"))
-                {
-                    //Increments or decrements the number based on the isPositive param.
-                    if(isPositive)
-                    {
-                        //If the jump will cause the current value to go above the max, then limit it.
-                        if(eval("(this.attr"+attrNum+"CurrentVal + this.attr"+attrNum+".jump) <= this.attr"+attrNum+".max"))
-                            eval("this.attr"+attrNum+"CurrentVal += this.attr"+attrNum+".jump;");
-                        else eval("this.attr"+attrNum+"CurrentVal = this.attr"+attrNum+".max")
-                    }
-                    else
-                    {
-                        //If the jump will cause the current value to go below the min, then limit it.
-                        if(eval("(this.attr"+attrNum+"CurrentVal - this.attr"+attrNum+".jump) >= this.attr"+attrNum+".min"))
-                            eval("this.attr"+attrNum+"CurrentVal -= this.attr"+attrNum+".jump;");
-                        else eval("this.attr"+attrNum+"CurrentVal = this.attr"+attrNum+".min")
-                    }
-
-                    //Updates the attribute bar for this attribute to reflect the new changes.
-                    this.updateAttributeBar(attrNum);
-                    //Update the coupled attribute bar if it exists to reflect any new changes.
-                    if(coupledNum != 0)
-                    {
-                        eval("this.attr"+coupledNum+"CurrentVal -= coupledPrice;");
-                        this.updateAttributeBar(coupledNum);
-                    }
-                }
-        }
-        //else if you are looping than add the attributes to the array
-        //if tru add to array
-        else if(this.ArrayCheck)
-            {
-                loopQueue.addToQueue(attrNum, isPositive);
-                console.log(attrNum +" & "+isPositive + " :has been added to the array."); 
-                this.ArrayCheck = false; 
-            }
-        
+        loopQueue.incrementPoints();
+        this.updateAttributeAmountByJump(attrNum, isPositive);
     }
-    
+};
+
+
+/**
+ * Decodes which attribute bar to update and then calls update from button.
+ * @param attrName
+ * @param isPositive
+ * @returns amount - Either the amount, or max / min for that attribute.
+ */
+Attributes.prototype.updateAttributeAmountFromLoop = function(attrName, isPositive)
+{
+    //Decodes whether the attribute name is modeled on one of the attribute bars.
+    //If it is, then make sure that the bar is updated to reflect new changes.
+    switch(attrName)
+    {
+        case this.attr1.name:
+            return this.updateAttributeAmountByJump(1,isPositive);
+            break;
+        case this.attr2.name:
+            return this.updateAttributeAmountByJump(2,isPositive);
+            break;
+        case this.attr3.name:
+            return this.updateAttributeAmountByJump(3,isPositive);
+            break;
+    }
+};
+
+/**
+ * Actually increases the amount on the button.
+ * @param attrNum
+ * @param isPositive
+ */
+Attributes.prototype.updateAttributeAmountByJump = function(attrNum, isPositive)
+{
+    //Don't do anything if the value is the max and your trying to increment or value is min and trying to decrement.
+    if(!((isPositive && eval("this.attr"+attrNum+"CurrentVal >= this.attr"+attrNum+".max")) || (!isPositive && eval("this.attr"+attrNum+"CurrentVal <= this.attr"+attrNum+".min"))))
+    {
+        //Get the attribute number and the price for the coupled attribute.
+        var coupledNum = eval("this.attr"+attrNum+".coupled");
+        var coupledPrice = eval("this.attr"+attrNum+".price");
+        //If the coupled attribute doesn't have over the price, the don't change.
+        //If coupledNum == 0, then this attribute is not coupled so continue.
+        if(eval("(this.attr"+coupledNum+"CurrentVal >= coupledPrice) || coupledNum == 0"))
+        {
+            //Increments or decrements the number based on the isPositive param.
+            if(isPositive)
+            {
+                //If the jump will cause the current value to go above the max, then limit it.
+                if(eval("(this.attr"+attrNum+"CurrentVal + this.attr"+attrNum+".jump) <= this.attr"+attrNum+".max"))
+                    eval("this.attr"+attrNum+"CurrentVal += this.attr"+attrNum+".jump;");
+                else eval("this.attr"+attrNum+"CurrentVal = this.attr"+attrNum+".max")
+            }
+            else
+            {
+                //If the jump will cause the current value to go below the min, then limit it.
+                if(eval("(this.attr"+attrNum+"CurrentVal - this.attr"+attrNum+".jump) >= this.attr"+attrNum+".min"))
+                    eval("this.attr"+attrNum+"CurrentVal -= this.attr"+attrNum+".jump;");
+                else eval("this.attr"+attrNum+"CurrentVal = this.attr"+attrNum+".min")
+            }
+
+            //Updates the attribute bar for this attribute to reflect the new changes.
+            this.updateAttributeBar(attrNum);
+            //Update the coupled attribute bar if it exists to reflect any new changes.
+            if(coupledNum != 0)
+            {
+                eval("this.attr"+coupledNum+"CurrentVal -= coupledPrice;");
+                this.updateAttributeBar(coupledNum);
+            }
+        }
+    }
     //Updates the attribute bar to reflect changes.
     this.updateAttributeBar(attrNum);
-            
     //vibrates when a button is clicked for time in ms
     window.navigator.vibrate(50);
-        
-
 };
 
 /**
