@@ -1,19 +1,19 @@
 var attributes = new Attributes();  //Global attribute object which manages the value
-// loopQueue = new LoopQueue(currentLevel.queueSize);
-var currentLevel;  //Holds what the current level is.
-var loopQueue = new LoopQueue(10);
-var winCondition;                   //Holds the win condition for the level. This function is checked every game update.
-var onStart;                        //Function called at level creation to add level specific components into the game.
-var onUpdate;     //Holds the win condition for the level. This function is checked every game update.
-var delayTime = 50; //the time it takes for the loop to go to the next element
 
-var currentlyOnGround = true;
-var previousYVelocities = [0];
+var currentLevel;               //Holds what the current level is.
+var loopQueue;                  //Holds the looping queue.
+var winCondition;               //Holds the win condition for the level. This function is checked every game update.
+var onStart;                    //Function called at level creation to add level specific components into the game.
+var onUpdate;                   //Holds the win condition for the level. This function is checked every game update.
+var delayTime = 50;             //the time it takes for the loop to go to the next element
+
+var currentlyOnGround = true;   //Used to tell whether the player is already on the group.
+var previousYVelocities = [0];  //Used to store previous y-velocities.
+
+var timeElapsed = 0;            //Keep track of time since last loop.
 
 var Main = function(game) {/*This function allows "Main" to be accessed by the game instance.*/};
-//keep track of location in array and time elapsed
-var i =0; 
-var elapsed =0;
+
 Main.prototype = {
     //Called once at the start of the game to create and load everything in.
     create: function()
@@ -30,10 +30,7 @@ Main.prototype = {
         this.createBBlocks();
         this.createSpikes();
         this.game.input.onDown.add(togglePause,this);  //Add a onDown functions to game.
-        this.game.physics.p2.setImpactEvents(true);      //Important: allows sprites to trigger impact events.
-
-        //text.text = game.add.text(16, 16, 'Drag the sprites. Overlapping: False', { fill: '#ffffff' });
-
+        this.game.physics.p2.setImpactEvents(true);    //Important: allows sprites to trigger impact events.
     },
 
     update: function()
@@ -49,7 +46,6 @@ Main.prototype = {
         //Flips the character left of right depending on which way their velocity is. 1 is right, -1 is left.
         if(attributes.velocity() < 0)
             this.player.scale.x = -1;
-
         else if (attributes.velocity() > 0)
             this.player.scale.x = 1;
 
@@ -61,41 +57,26 @@ Main.prototype = {
         else
             this.player.loadTexture("avatar", 0);
 
+        //Check for overlap with the various collections and the player.
         this.checkOverlapManually(this.gems, 40);
         this.checkOverlapManually(this.goals, 60);
-
         this.checkOverlapManually(this.spikeSeed, 40);
         this.checkOverlapManually(this.breakBlock, 65);
 
         this.updateGameAttributes();
-        
-        
-         console.log("Looparraysize: "+ loopQueue.LoopArray.length); 
-        //update
-        if(elapsed > delayTime && loopQueue.LoopArray[i] != null )
-           {
-               loopQueue.BeginArray = false; 
-               elapsed = 0; 
-           attributes.updateAttributeAmountFromButton(loopQueue.LoopArray[i],loopQueue.BoolArray[i]);
-               console.log("updated");  
-               i++; 
-               console.log("i"+i); 
-               if(loopQueue.LoopArray[i] == null)
-                   {
-                     i=0; 
 
-                   }
+        //Update the attributes from the queue every so often.
+        if(timeElapsed > delayTime)
+        {
+            var element = loopQueue.getNextElement();
+            if(element != null)
+            {
+                attributes.updateAttributeAmountFromLoop(element[0],element[1]);
+                console.log(element[0]+"    "+element[1]+"   "+loopQueue.getPoints() + "   "+loopQueue.currentElement);
             }
-    elapsed++; 
-      //  console.log("ELAPSED"+elapsed); 
-        //keep track of ellapsed game time
-        
-        //time.update?????
-        //keep track of points
-        //if its first time add all the buttons for points
-        //else add one at the beginning. 
-        
-
+            timeElapsed = 0;
+        }
+        timeElapsed++;
     },
     //Called every game update and updates the attribute amount if any changes were made.
     updateGameAttributes: function()
@@ -248,8 +229,6 @@ Main.prototype = {
         this.player.animations.add('walk', [1,2,3], 10, true);
         this.player.animations.play('walk');
 
-        //fun
-        //this.player.scale.set(2);
     },
     createWorld: function()
     {
@@ -450,7 +429,7 @@ Main.prototype = {
                 winCondition = currentLevel.winCondition;
                 onStart = currentLevel.onStart;
                 onUpdate = currentLevel.onUpdate;
-               // loopQueue = new LoopQueue(currentLevel.queueSize);
+                loopQueue = new LoopQueue(currentLevel.queueSize);
                 break;
             case 2:
                 currentLevel = levels.level2;
@@ -476,8 +455,8 @@ Main.prototype = {
 
                     document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_gravityDecrease.png";
                     //document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Gravity";
-                    document.getElementById("button_"+upperContainer+"_image").onclick = function () {attributes.updateAttributeAmountFromButton(barNum,true);};
-                    document.getElementById("button_"+lowerContainer+"_image").onclick = function () {attributes.updateAttributeAmountFromButton(barNum,false);};
+                    document.getElementById("button_"+upperContainer+"_image").onclick = function () {attributes.updateAttributeAmountFromButton(barNum,true);loopQueue.addToQueue("gravity",true);};
+                    document.getElementById("button_"+lowerContainer+"_image").onclick = function () {attributes.updateAttributeAmountFromButton(barNum,false);loopQueue.addToQueue("gravity",false);};
                     document.getElementById("attributeBar_"+barNum+"_label").innerHTML = "Gravity";
                     break;
                 case "velocity":
@@ -486,8 +465,8 @@ Main.prototype = {
 
                     document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_velocityLeft.png";
                     //document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Velocity";
-                    document.getElementById("button_"+upperContainer+"_image").onclick= function () {attributes.updateAttributeAmountFromButton(barNum,true);};
-                    document.getElementById("button_"+lowerContainer+"_image").onclick= function () {attributes.updateAttributeAmountFromButton(barNum,false);};
+                    document.getElementById("button_"+upperContainer+"_image").onclick= function () {attributes.updateAttributeAmountFromButton(barNum,true);loopQueue.addToQueue("velocity",true);};
+                    document.getElementById("button_"+lowerContainer+"_image").onclick= function () {attributes.updateAttributeAmountFromButton(barNum,false);loopQueue.addToQueue("velocity",false);};
                     document.getElementById("attributeBar_"+barNum+"_label").innerHTML = "Velocity";
                     break;
 
@@ -495,8 +474,8 @@ Main.prototype = {
                     document.getElementById("button_"+upperContainer+"_image").src = "assets/images/Buttons/spr_springIncrease.png";
                     document.getElementById("button_"+upperContainer+"_text").innerHTML = "Bounce";
                     document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_springDecrease.png";
-                    document.getElementById("button_"+upperContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,true);};
-                    document.getElementById("button_"+lowerContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,false);};
+                    document.getElementById("button_"+upperContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,true);loopQueue.addToQueue("bounce",true);};
+                    document.getElementById("button_"+lowerContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,false);loopQueue.addToQueue("bounce",false);};
                     document.getElementById("attributeBar_"+barNum+"_label").innerHTML = "Bounce";
                     break;
                 case "friction":
@@ -505,8 +484,8 @@ Main.prototype = {
                     document.getElementById("button_"+upperContainer+"_text").innerHTML = "Friction";
                     document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_frictionDown.png";
                     //document.getElementById("button_"+lowerContainer+"_text").innerHTML = "Decrease Friction";
-                    document.getElementById("button_"+upperContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,true);};
-                    document.getElementById("button_"+lowerContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,false);};
+                    document.getElementById("button_"+upperContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,true);loopQueue.addToQueue("friction",true);};
+                    document.getElementById("button_"+lowerContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,false);loopQueue.addToQueue("friction",false);};
                     document.getElementById("attributeBar_"+barNum+"_label").innerHTML = "Friction";
                     break;
                     break;
@@ -514,8 +493,8 @@ Main.prototype = {
                     document.getElementById("button_"+upperContainer+"_image").src = "assets/images/Buttons/spr_accelerationRightBlue.png";
                     document.getElementById("button_"+upperContainer+"_text").innerHTML = "Acceleration";
                     document.getElementById("button_"+lowerContainer+"_image").src = "assets/images/Buttons/spr_accelerationLeftBlue.png";
-                    document.getElementById("button_"+upperContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,true);};
-                    document.getElementById("button_"+lowerContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,false);};
+                    document.getElementById("button_"+upperContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,true);loopQueue.addToQueue("acceleration",true);};
+                    document.getElementById("button_"+lowerContainer+"_image").onclick=function () {attributes.updateAttributeAmountFromButton(barNum,false);loopQueue.addToQueue("acceleration",false);};
                     document.getElementById("attributeBar_"+barNum+"_label").innerHTML = "Acceleration";
                     break;
             }
@@ -528,42 +507,31 @@ Main.prototype = {
 
     loadAttributeQueueInfo: function()
     {
-       // document.getElementById("loop_button").onclick = function() {loopQueue.addToQueue()};
-        document.getElementById("loop_button").onclick = function() {loopQueue.startToQueue()};
+        document.getElementById("loop_button").onclick = function() {loopQueue.startAddingToArray()};
         document.getElementById("reset_loop_button").onclick = function() {loopQueue.resetQueue()};
     }
-
 };
 
 //Toggles between the pause and un-pause states of the game.
 function togglePause()
 {
-    
-    
     if(this.game.paused)
     {
         document.getElementById("buttonLayer").style.display = "none";
-        //this.game.add.text(175, 800, game.paused);
-     
+        loopQueue.stopAddingToArray();
         this.game.paused = false;
     }
     else
     {
         document.getElementById("buttonLayer").style.display = "block";
-        //when You unpause the game iterate through the looparray
         this.game.paused = true;
-        //when you pause the game, clear the loop array
-        loopQueue.resetQueue(); 
-       
+        //Clear the loop array if you pause the game.
+        loopQueue.resetQueue();
     }
-  
-    
 }
 
 //Reloads the page to reset the level.
 function retryLevel()
 {
-    //vibrates the phone for feed back
-
     window.location.href = 'Sprite_Page.html';
 }
