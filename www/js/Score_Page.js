@@ -1,26 +1,23 @@
 /**
- * Created by DavisGoulet on 2016-06-19.
- */
-
-/**
  * When the score page loads, this function is called to set any variables onto the page.
  */
 function updatePageInfo()
 {
-    var attemptString = "Attempts: " + getLevelAttempts();
+    var attemptString = "Points: " + loopQueue.getPoints();
+    var levelString;
 
     //Display level message based on completion of level
     if(localStorage.win === "false")
     {
-        var levelString = "Level " + getCurrentLevel() + " incomplete!";
+        levelString = "Level " + getCurrentLevel() + " incomplete!";
     }
     else if(localStorage.win === "null")
     {
-        var levelString = "Level " + getCurrentLevel() + " still not complete!";
+        levelString = "Level " + getCurrentLevel() + " still not complete!";
     }
     else
     {
-        var levelString = "Level " + getCurrentLevel() + " complete!";
+        levelString = "Level " + getCurrentLevel() + " complete!";
     }
 
     document.getElementById("attemptMessage").innerHTML = attemptString;
