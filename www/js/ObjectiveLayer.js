@@ -32,12 +32,7 @@ function updateObjectiveScreen()
     //Gets the current level from memory, it it doesn't exist give it a default of 1.
     if (localStorage.currentLevel)
     {
-       currentLevel = localStorage.currentLevel;
-    }
-    else
-    {
-        localStorage.currentLevel = 1;
-        currentLevel = 1;
+       currentLevel = getCurrentLevel();
     }
     document.getElementById("levelNumber").innerHTML = "Level " + currentLevel;
 
@@ -45,8 +40,8 @@ function updateObjectiveScreen()
     switch(currentLevel)
     {
         case "1":
-            bodyText = "&quot;Hee Hee Hee, For you will never be free. Don't bother attempting to reach the portal, for you will never again be mortal.&quot;<br><br>Goal: Escape by reaching the goal in the cliff";
-            levelName = "Level 1 Name";
+            bodyText = "&quot;Hee Hee Hee, For you will never be free. For I have covered the portal&quot;<br><br>Goal: Escape by reaching the portal under the rocks";
+            levelName = "Leap of Faith";
             break;
 
         case "2":
